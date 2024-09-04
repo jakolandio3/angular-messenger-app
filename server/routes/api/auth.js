@@ -133,4 +133,29 @@ module.exports = {
       }
     });
   },
+  Delete: (req, res) => {
+    fs.readFile(DATABASE.USERS_DB, "utf-8", function (error, data) {
+      if (error) throw error;
+      let userArr = JSON.parse(data);
+      console.log(userArr);
+
+      let i = userArr.findIndex((user) => user.UUID === Number(req.body.data));
+      if (i === -1) {
+        res.send({ error: "ID cant be found" });
+      } else {
+        let newArr = userArr.splice(i, 1);
+
+        res.send({ message: "Deleted User" });
+        const stringifiedUsers = JSON.stringify(userArr);
+        fs.writeFile(
+          DATABASE.USERS_DB,
+          stringifiedUsers,
+          "utf-8",
+          function (err) {
+            if (err) throw err;
+          }
+        );
+      }
+    });
+  },
 };

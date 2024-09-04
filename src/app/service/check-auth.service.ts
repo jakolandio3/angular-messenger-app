@@ -66,6 +66,18 @@ export class CheckAuthService {
     this.clearSessionStorage();
     this.checkIsValid();
   }
+  removeAccount(): any {
+    this.httpClient
+      .post(
+        this.BACKENDURL + '/api/auth/delete',
+        JSON.stringify({ data: sessionStorage.getItem('UUID') }),
+        this.httpOptions
+      )
+      .subscribe((res) => console.log(res));
+    this.router.navigate(['/login']);
+    this.clearSessionStorage();
+    this.checkIsValid();
+  }
 
   updateUser(data: userObj): Observable<userObj> {
     console.log('updating');

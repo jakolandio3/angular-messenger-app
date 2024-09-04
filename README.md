@@ -61,6 +61,7 @@ Links: TBA
   - Push Feat: Scaffold routes in front-end
 - **feat/login-logout**
   - Push Feat: Login function
+  - Push Feat: Logout/Create user function
 
 ### Git Repository Pushes/Updates
 
@@ -89,7 +90,7 @@ _A comprehensive breakdown of each commit to the remote repository along with me
 4. Basic scaffold of new components
 5. basic scaffold of new components html
 
-#### Feat: Login function
+#### Feat: Login function -feat/login-logout
 
 1. Changes to readme.md
 2. Login function created on backend
@@ -97,7 +98,7 @@ _A comprehensive breakdown of each commit to the remote repository along with me
 4. new service created CheckAuth
 5. CheckAuth functions added
 
-#### Feat: Logout/Create user function
+#### Feat: Logout/Create user function -feat/login-logout
 
 1. Changes to readme.md
 2. Logout function created on backend
@@ -107,6 +108,13 @@ _A comprehensive breakdown of each commit to the remote repository along with me
 6. Register Component UI Updated
 7. Routing added to Register Component
 8. Update functions added to Account Component
+
+#### Feat: Delete User function -feat/login-logout
+
+1. Changes to readme.md
+2. Delete function created on back-end
+3. Delete function created in CheckAuth Service
+4. Delete function created in Account Component
 
 ## Data Structures
 
@@ -186,6 +194,7 @@ _The Angular components available and in use on this application._
    - Provides authenticated users with details of their account available to update
    - Functions for updating basic account variables
    - Handles unauthorized users by routing back to /login
+   - Allows users to Delete account by calling AuthService Delete Function
 
 3. **Admin**
 
@@ -233,6 +242,7 @@ _The Angular services available and in use on this application._
      6. ClearSessionStorage: Clears SessionStorage
      7. GetFromSessionStorage: Gets Value From SessionStorage
      8. CreateUser: Makes a call to the server to create a new user
+     9. RemoveAccount: Makes a call to the server to Delete the registered users account
    - **Used In:**
      1. Login Component
      2. App Component
@@ -334,6 +344,7 @@ _A list of files on the back-end and a sub-list of the functions they contain._
    2. **Logout** - A function that checks passed in UUID and un-validates user.
    3. **Update** - A Function that looks at the request object, checks for a valid match in the database and updated fields accordingly.
    4. **CreateUser** - A function that looks at the request object and checks to see if the username has been registered on the database, if it has not the function creates a new User class instance (UUID is assured to be new each time) and pushes it to the database, returning the object in the response.
+   5. **Delete** - A function that checks passed in UUID and deletes the user from the database.
 
 ### Routes (Express)
 
@@ -426,6 +437,23 @@ _Routes that are available on the back-end and an explanation of what they do._
 
    - **DELETE:** N/A
 
+6. **"/auth/delete"**
+
+   - **GET:** N/A
+
+   - **POST:**
+
+     - **Function:** CreateUser()
+     - **Params:** {UUID: string}
+     - **Return:** VOID
+     - **Purpose:** Runs a function for removing an account from the database
+
+   - **PUT:** N/A
+
+   - **PATCH:** N/A
+
+   - **DELETE:** N/A
+
 ### Files
 
 _Files that are accessed/used by our back end._
@@ -502,8 +530,8 @@ _Description of what happens on each side of our application during a certain ev
 
 ### Delete User
 
-- **Front-End:** does this
+- **Front-End:** Session storage is wiped and user is redirected to the login screen
 
-- **Back-End:** does this
+- **Back-End:** Runs a function for removing user at a passed UUID from the database
 
-- **DataBase:** does this
+- **DataBase:** Is updated to no longer contain the user at the passed UUID

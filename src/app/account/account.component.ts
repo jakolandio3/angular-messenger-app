@@ -33,6 +33,11 @@ export class AccountComponent {
       this.router.navigate(['/login']);
     }
   }
+  onDeleteAcc() {
+    if (confirm('Are you sure you want to delete your account?')) {
+      this.auth.removeAccount();
+    }
+  }
   onUpdate() {
     this.isLoading = true;
     if (this.newPassword === '') {
