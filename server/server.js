@@ -24,5 +24,8 @@ app.get("/", (req, res) => {
 });
 
 app.post("/api/auth/login", require("./routes/api/auth").Login);
+app.post("/api/auth/update", require("./routes/api/auth").Update);
+app.post("/api/auth/logout", require("./routes/api/auth").Logout);
+app.post("/api/auth/register", require("./routes/api/auth").CreateUser);
 
 // just checking the server is running

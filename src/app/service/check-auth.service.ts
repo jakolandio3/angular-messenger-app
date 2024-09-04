@@ -17,10 +17,10 @@ export interface userObj {
   username?: string;
   email?: string;
   valid?: boolean;
-  UUID?: number;
+  UUID: number;
   password?: string;
-  roles: role[];
-  groups: group[];
+  roles?: role[];
+  groups?: group[];
 }
 
 @Injectable({
@@ -37,6 +37,14 @@ export class CheckAuthService {
   constructor(private httpClient: HttpClient, private router: Router) {
     this.valid = new BehaviorSubject(sessionStorage.getItem('valid'));
     this.getValid = this.valid.asObservable();
+  }
+  CreateUser(data: userCheck): Observable<userObj> {
+    console.log('checking', data);
+    return this.httpClient.post<userObj>(
+      this.BACKENDURL + '/api/auth/register',
+      data,
+      this.httpOptions
+    );
   }
   login(data: userCheck): Observable<userObj> {
     console.log('checking', data);

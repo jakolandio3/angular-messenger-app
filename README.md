@@ -60,6 +60,7 @@ Links: TBA
 - **feat/front-end-routes**
   - Push Feat: Scaffold routes in front-end
 - **feat/login-logout**
+  - Push Feat: Login function
 
 ### Git Repository Pushes/Updates
 
@@ -95,6 +96,17 @@ _A comprehensive breakdown of each commit to the remote repository along with me
 3. login function created on login component
 4. new service created CheckAuth
 5. CheckAuth functions added
+
+#### Feat: Logout/Create user function
+
+1. Changes to readme.md
+2. Logout function created on backend
+3. Update function created on backend
+4. CreateUser function created on backend
+5. CheckAuth functions added
+6. Register Component UI Updated
+7. Routing added to Register Component
+8. Update functions added to Account Component
 
 ## Data Structures
 
@@ -167,12 +179,13 @@ _The Angular components available and in use on this application._
 1. **App**
 
    - Provides Nav bar using RouterLink and Displays current Route using Router-Outlet
-   - Nothing else implemented Yet
+   - Handles Logout Function and displays certain links when authorized or not
 
 2. **Account**
 
    - Provides authenticated users with details of their account available to update
-   - Nothing else implemented Yet
+   - Functions for updating basic account variables
+   - Handles unauthorized users by routing back to /login
 
 3. **Admin**
 
@@ -219,6 +232,7 @@ _The Angular services available and in use on this application._
      5. SaveToSessionStorage: Save a key value pair to session storage
      6. ClearSessionStorage: Clears SessionStorage
      7. GetFromSessionStorage: Gets Value From SessionStorage
+     8. CreateUser: Makes a call to the server to create a new user
    - **Used In:**
      1. Login Component
      2. App Component
@@ -248,7 +262,8 @@ _The available routes/endpoints we can hit on our front-end Angular project._
 3. **"/register"**
 
    - Displays Register Component
-   - Will provide navigation upon registration to redirect user to home
+   - Creates a new user if username does not exist
+   - Routes user to /auth/home when registered and validated
 
 4. **"/auth"**
 
@@ -277,6 +292,7 @@ _The available routes/endpoints we can hit on our front-end Angular project._
 
    - Displays Account Component
    - Will redirect if unauthorized
+   - Allows users to update username, email and password
 
 10. **"/auth/admin" (App Route)**
 
@@ -315,6 +331,9 @@ _A list of files on the back-end and a sub-list of the functions they contain._
 
 3. **Auth.js**
    1. **Login** - A function that looks at the request object(email and password) and compares it to the user database sending back a user object if the user exists and credentials are correct, if incorrect or user does not exist it sends back a valid:false.
+   2. **Logout** - A function that checks passed in UUID and un-validates user.
+   3. **Update** - A Function that looks at the request object, checks for a valid match in the database and updated fields accordingly.
+   4. **CreateUser** - A function that looks at the request object and checks to see if the username has been registered on the database, if it has not the function creates a new User class instance (UUID is assured to be new each time) and pushes it to the database, returning the object in the response.
 
 ### Routes (Express)
 
@@ -348,6 +367,58 @@ _Routes that are available on the back-end and an explanation of what they do._
        pwd: string;}
      - **Return:** stringified userObj
      - **Purpose:**Authenticate a user
+
+   - **PUT:** N/A
+
+   - **PATCH:** N/A
+
+   - **DELETE:** N/A
+
+3. **"/auth/logout"**
+
+   - **GET:** N/A
+
+   - **POST:**
+
+     - **Function:** Logout()
+     - **Params:** {UUID: string;}
+     - **Return:** VOID
+     - **Purpose:** in-validate user on database
+
+   - **PUT:** N/A
+
+   - **PATCH:** N/A
+
+   - **DELETE:** N/A
+
+4. **"/auth/update"**
+
+   - **GET:** N/A
+
+   - **POST:**
+
+     - **Function:** Update()
+     - **Params:** {user:userObj}
+     - **Return:** stringified userObj
+     - **Purpose:**Update a users details
+
+   - **PUT:** N/A
+
+   - **PATCH:** N/A
+
+   - **DELETE:** N/A
+
+5. **"/auth/register"**
+
+   - **GET:** N/A
+
+   - **POST:**
+
+     - **Function:** CreateUser()
+     - **Params:** {email: string;
+       pwd: string;}
+     - **Return:** stringified userObj
+     - **Purpose:** Create a new instance of Class user, add it to the database and Authenticate a user
 
    - **PUT:** N/A
 
@@ -407,19 +478,27 @@ _Description of what happens on each side of our application during a certain ev
 
 ### Logout User
 
-- **Front-End:** does this
+- **Front-End:** Redirects to /login, navbar icons and links are changed/updated accordingly, session storage is emptied
 
-- **Back-End:** does this
+- **Back-End:** in-validates user in database
 
-- **DataBase:** does this
+- **DataBase:** The user accessed on users DB is mutated to have valid:false
 
-### Update User
+### Update User (in settings)
 
-- **Front-End:** does this
+- **Front-End:** Session storage is updated accordingly instances of values taken from session storage are changed to reflect new data
 
-- **Back-End:** does this
+- **Back-End:** Runs a function to access database and update user accordingly after validation checks
 
-- **DataBase:** does this
+- **DataBase:** The user accessed on users DB is mutated accordingly
+
+### Create New User (in settings)
+
+- **Front-End:** Session storage is updated and user is redirected to auth/home
+
+- **Back-End:** Runs a function to access database check if email is already in use and if not it creates a new user and pushed it to the database
+
+- **DataBase:** A new user is added to the users DB
 
 ### Delete User
 
