@@ -57,11 +57,13 @@ Links: TBA
   - Push Initial Commit
   - Push Docs: Scaffold readme file
   - Merge feat/front-end-routes
+  - Merge feat/login-logout
 - **feat/front-end-routes**
   - Push Feat: Scaffold routes in front-end
 - **feat/login-logout**
   - Push Feat: Login function
   - Push Feat: Logout/Create user function
+  - Push Feat: Delete User function
 
 ### Git Repository Pushes/Updates
 
