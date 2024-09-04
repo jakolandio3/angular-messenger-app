@@ -22,4 +22,7 @@ app.get("/", (req, res) => {
   console.log("server has been spun up");
   res.send("Hello");
 });
+
+app.post("/api/auth/login", require("./routes/api/auth").Login);
+
 // just checking the server is running

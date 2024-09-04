@@ -56,8 +56,10 @@ Links: TBA
 - **Main**
   - Push Initial Commit
   - Push Docs: Scaffold readme file
+  - Merge feat/front-end-routes
 - **feat/front-end-routes**
   - Push Feat: Scaffold routes in front-end
+- **feat/login-logout**
 
 ### Git Repository Pushes/Updates
 
@@ -86,6 +88,14 @@ _A comprehensive breakdown of each commit to the remote repository along with me
 4. Basic scaffold of new components
 5. basic scaffold of new components html
 
+#### Feat: Login function
+
+1. Changes to readme.md
+2. Login function created on backend
+3. login function created on login component
+4. new service created CheckAuth
+5. CheckAuth functions added
+
 ## Data Structures
 
 _Defines how various entities are represented in different areas of the application._
@@ -94,14 +104,23 @@ _Defines how various entities are represented in different areas of the applicat
 
 _A description of data structures used to represent various entities in the front-end of the application e.g interfaces or classes._
 
-1. **Users** - N/A yet
-   - **Super Admin**
-     - **Interface:** _Admin {name:String,id:Number,roles:Roles[],groups:Groups[]}_
-     - **Class:** _SUPER_ADMIN implements Admin{some function()}_
-   - **Group admin**
-   - **User(chat user)**
-2. **Groups** - N/A yet
-3. **Roles** -N/A yet
+1. **Users**
+   - **Interface:** _userObj {
+     username?: string;
+     email?: string;
+     valid?: boolean;
+     UUID?: number;
+     password?: string;
+     roles: role[];
+     groups: group[];
+     }_
+2. **Groups**
+   - **interface** _group {
+     groupID: Number;
+     isAdmin: boolean;
+     }_
+3. **Roles**
+   - **type** _role = 'SUPERADMIN' | 'GROUPADMIN' | 'USER'_
 4. **Channels** - N/A yet
 5. **Message** - N/A yet
 
@@ -109,7 +128,22 @@ _A description of data structures used to represent various entities in the fron
 
 _A description of the models used in the back-end of the application._
 
-1. **User** - Model in server/models file
+1. **User**- Model in server/models file
+   - **Class** _user ={
+     username;
+     email;
+     valid = true;
+     UUID;
+     password;
+     roles = ["USER"];
+     groups = [];
+     constructor(username, email, password, UUID) {
+     this.username = username;
+     this.email = email;
+     this.password = password;
+     this.UUID = UUID;
+     }
+     }_
 2. **Group** - Model in server/models file
 3. **Channel** - Model in server/models file
 4. **Message** - Model in server/models file
@@ -118,7 +152,7 @@ _A description of the models used in the back-end of the application._
 
 _A description of the structure of each database._
 
-1. **Users** - an array of type user stringified to the json file in database folder N/A and EMPTY currently
+1. **Users** - an array of type user stringified to the json file in database folder
 2. **Groups** -an array of type group stringified to the json file in database folder N/A and EMPTY currently
 3. **Channels** - an array of type channel stringified to the json file in database folder N/A and EMPTY currently
 
@@ -158,7 +192,7 @@ _The Angular components available and in use on this application._
 
    - Provides users with a way to authenticate and login
    - Provides a username and password form for users to login
-   - Will contain a function for login
+   - Contains function for login using CheckAuth service functions to return an observable and subscribing to the output
 
 7. **Profile**
 
@@ -175,10 +209,25 @@ _The Angular components available and in use on this application._
 
 _The Angular services available and in use on this application._
 
-1. **"none yet"**
-   - **Description:**
+1. **"CheckAuth"**
+   - **Description:** A Angular Service for authentication and handler functions such as storing and fetching data in session storage and making calls to the server.
    - **Available Functions:**
+     1. Login: Call back-end to validate user
+     2. Logout: Call back-end to un-validate user and clear session storage
+     3. UpdateUser: Call back end to make changes to a users details
+     4. CheckIsValid: Checks session storage to see if user is logged in
+     5. SaveToSessionStorage: Save a key value pair to session storage
+     6. ClearSessionStorage: Clears SessionStorage
+     7. GetFromSessionStorage: Gets Value From SessionStorage
    - **Used In:**
+     1. Login Component
+     2. App Component
+     3. Profile Component
+     4. Groups Component
+     5. Account Component
+     6. Channel Component
+     7. Admin Component
+     8. Register Component
 
 ### Routes (Angular)
 
@@ -246,6 +295,8 @@ _A list of the module files that contain functions imported and used on the serv
 
 2. **Routes** - contains routes for different end-points
 
+3. **Routes/api/auth** - contains functions for user authentication and mutations including creation and deletion of users
+
 ### Functions
 
 _A list of files on the back-end and a sub-list of the functions they contain._
@@ -253,13 +304,17 @@ _A list of files on the back-end and a sub-list of the functions they contain._
 1. **Server.js**
 
    1. **express()** - Creates a new express app (_'const app=expess()'_)
-   2. **app.use(cors())** - uses cors middleware for cross origin resource sharing
-   3. **app.use(express.json())** -provides an ease of use function to stringify and parse data
-   4. **app.use(express.urlencoded({ extended: true }))** - makes express app only look at header section when teh content type is matched
-   5. **app.get('some route',some function)** - when a route as a get request satisfies the 'some route' condition the some function is ran
+   2. **app.use(cors())** - uses cors middleware for cross origin resource sharing.
+   3. **app.use(express.json())** -provides an ease of use function to stringify and parse data.
+   4. **app.use(express.urlencoded({ extended: true }))** - makes express app only look at header section when teh content type is matched.
+   5. **app.get('some route',some function)** - when a route as a get request satisfies the 'some route' condition the some function is ran.
 
 2. **Listen.js**
-   1. **Listen(app,PORT)** - A helper function for the server it takes in an app and a port and runs the server on that port
+
+   1. **Listen(app,PORT)** - A helper function for the server it takes in an app and a port and runs the server on that port.
+
+3. **Auth.js**
+   1. **Login** - A function that looks at the request object(email and password) and compares it to the user database sending back a user object if the user exists and credentials are correct, if incorrect or user does not exist it sends back a valid:false.
 
 ### Routes (Express)
 
@@ -275,6 +330,24 @@ _Routes that are available on the back-end and an explanation of what they do._
      - **Purpose:** Respond the a successful connection to the server
 
    - **POST:** N/A
+
+   - **PUT:** N/A
+
+   - **PATCH:** N/A
+
+   - **DELETE:** N/A
+
+2. **"/auth/login"**
+
+   - **GET:** N/A
+
+   - **POST:**
+
+     - **Function:** Login()
+     - **Params:** {email: string;
+       pwd: string;}
+     - **Return:** stringified userObj
+     - **Purpose:**Authenticate a user
 
    - **PUT:** N/A
 
@@ -326,11 +399,11 @@ _Description of what happens on each side of our application during a certain ev
 
 ### Login User
 
-- **Front-End:** does this
+- **Front-End:** Redirects to auth/home, and stores user data in the session storage.
 
-- **Back-End:** does this
+- **Back-End:** Runs a Login function accesses database, checks user validation and returns a userObj
 
-- **DataBase:** does this
+- **DataBase:** The user accessed on users DB is mutated to have valid:true
 
 ### Logout User
 

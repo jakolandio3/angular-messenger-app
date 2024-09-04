@@ -1,0 +1,1 @@
+[{"username":"Super","email":"super@gmail","valid":true,"UUID":2909,"password":"123","roles":"['SUPERADMIN','USERADMIN','USER']","groups":"[{groupID:1, isAdmin: true}]"}]
