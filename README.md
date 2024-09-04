@@ -69,6 +69,7 @@ Links: TBA
   - Push Feat: Authenticated-Route
 - **feat/groups**
   - Push Feat: getGroups
+  - Push Feat: createGroups
 
 ### Git Repository Pushes/Updates
 

@@ -31,5 +31,6 @@ app.post("/api/auth/delete", require("./routes/api/auth").Delete);
 // group calls
 app.post("/api/groups/all", require("./routes/api/group").getAll);
 app.get("/api/groups/id", require("./routes/api/group").getAllID);
-
+app.post("/api/groups/assign", require("./routes/api/group").assignUserToGroup);
+app.post("/api/groups/create", require("./routes/api/group").createNewGroup);
 // just checking the server is running

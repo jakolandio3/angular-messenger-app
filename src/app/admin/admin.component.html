@@ -4,7 +4,11 @@
   <h2>Groups</h2>
   <div class="card">
     <div class="card-body">
-      <input type="text" /><button>Create new group</button>
+      <input type="text" [(ngModel)]="newGroupName" /><button
+        (click)="createNewGroup()"
+      >
+        Create new group
+      </button>
 
       <div class="card">
         <h2>This group</h2>

@@ -1,6 +1,7 @@
 const User = require("../../models/user");
 const DATABASE = require("../../config/index");
 const fs = require("fs");
+const Group = require("../../models/group");
 
 module.exports = {
   getAll: (req, res) => {
@@ -45,7 +46,6 @@ module.exports = {
     });
   },
   getAllID: (req, res) => {
-    console.log("herer");
     fs.readFile(DATABASE.GROUPS_DB, "utf-8", (error, data) => {
       let allGroups = JSON.parse(data);
       // console.log(allGroups, "all groups");
@@ -56,6 +56,51 @@ module.exports = {
         };
       });
       res.send(JSON.stringify(filtered));
+    });
+  },
+  assignUserToGroup: (req, res) => {
+    const { userID, groupID } = req.body;
+    fs.readFile(DATABASE.GROUPS_DB, "utf-8", (error, data) => {
+      let allGroups = JSON.parse(data);
+
+      let i = allGroups.findIndex((group) => group.UUID === groupID);
+      if (i === -1) {
+        console.log("error");
+      }
+      allGroups[i].users.push(userID);
+    });
+    fs.readFile(DATABASE.USERS_DB, "utf8", (error, data) => {
+      let allUsers = JSON.parse(data);
+      let j = allUsers.findIndex((user) => user.UUID === userID);
+      if (j === -1) {
+        console.log("error");
+      }
+      allUsers[j].groups.push(groupID);
+    });
+    res.send("someshit");
+  },
+  createNewGroup: (req, res) => {
+    const { userID, name } = req.body;
+    console.log(userID);
+    fs.readFile(DATABASE.USERS_DB, "utf8", (error, data) => {
+      let allUsers = JSON.parse(data);
+      let j = allUsers.findIndex((user) => user.UUID === +userID);
+      if (j === -1) {
+        console.log("error");
+      }
+      console.log(allUsers[j]);
+      if (allUsers[j].roles.includes("SUPERADMIN" || "USERADMIN")) {
+        fs.readFile(DATABASE.GROUPS_DB, "utf8", (error, data) => {
+          let allGroups = JSON.parse(data);
+          let newGroup = new Group(name, allGroups.length + 1);
+          allGroups.push(newGroup);
+          const stringifiedFile = JSON.stringify(allGroups);
+          fs.writeFile(DATABASE.GROUPS_DB, stringifiedFile, "utf-8", (error) =>
+            console.log(error)
+          );
+          res.send(stringifiedFile);
+        });
+      } else res.send({ error: "Not Authenticated" });
     });
   },
 };
