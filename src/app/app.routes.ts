@@ -12,7 +12,7 @@ import { CheckAuthService } from './service/check-auth.service';
 const authGuardUser: CanActivateChildFn = (): boolean | UrlTree => {
   const authService = inject(CheckAuthService);
   const router = inject(Router);
-  console.log(authService.checkIsValid());
+  console.log(authService.checkPermissions());
   return authService.checkPermissions() || router.createUrlTree(['/login']);
 };
 

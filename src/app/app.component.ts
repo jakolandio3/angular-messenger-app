@@ -20,7 +20,7 @@ export class AppComponent {
     this.auth.getValid.subscribe((val: any) => (this.loggedIn = val));
     this.auth.getPermissions.subscribe((val: role[]) => {
       this.permissions = val;
-      this.isAdmin = this.permissions.includes('SUPERADMIN' || 'USERADMIN');
+      this.isAdmin = this.permissions?.includes('SUPERADMIN' || 'USERADMIN');
     });
   }
 

@@ -105,10 +105,13 @@ export class CheckAuthService {
     this.permissions.next(
       sessionStorage.getItem('roles')?.split(',') as role[]
     );
+    console.log(this.getPermissions);
+    console.log(sessionStorage.getItem('roles'));
     if (
       sessionStorage.getItem('roles')?.split(',').length !== 0 &&
       sessionStorage.getItem('roles')
     ) {
+      console.log(sessionStorage.getItem('roles'));
       return true;
     } else return false;
   }

@@ -38,9 +38,10 @@ export class RegisterComponent {
             this.auth.saveToSessionStorage('email', res.email);
             this.auth.saveToSessionStorage('valid', res.valid);
             this.auth.saveToSessionStorage('UUID', res.UUID);
-            this.auth.saveToSessionStorage('Groups', res.groups);
-            this.auth.saveToSessionStorage('Roles', res.roles);
+            this.auth.saveToSessionStorage('groups', res.groups);
+            this.auth.saveToSessionStorage('roles', res.roles);
 
+            this.auth.checkPermissions();
             this.auth.checkIsValid();
             this.router.navigate(['/auth/home']);
           } else {

@@ -67,6 +67,8 @@ Links: TBA
   - Push Feat: Delete User function
 - **feat/authenticated-routes**
   - Push Feat: Authenticated-Route
+- **feat/groups**
+  - Push Feat: getGroups
 
 ### Git Repository Pushes/Updates
 
@@ -125,7 +127,15 @@ _A comprehensive breakdown of each commit to the remote repository along with me
 
 1. Changes to readme.md
 2. Added View differences depending on user permissions
-3. added function to check authentication level to CheckAuth service
+3. added function to check authentication level to CheckAuth
+   service
+
+#### Feat: getGroups -feat/groups
+
+1. Changes to readme.md
+2. Added new service for group related functions
+3. Added functions for retrieving groups in Groups Component
+4. Added function on back-end for retrieving groups
 
 ## Data Structures
 
@@ -219,7 +229,6 @@ _The Angular components available and in use on this application._
 5. **Groups**
 
    - Provides authenticated users with a view of groups dependent on your authorization level/role and if you are in said group
-   - Nothing else implemented Yet
 
 6. **Login**
 
@@ -337,6 +346,8 @@ _A list of the module files that contain functions imported and used on the serv
 
 3. **Routes/api/auth** - contains functions for user authentication and mutations including creation and deletion of users
 
+4. **Routes/api/group** - contains functions for group authentication and mutations including creation and deletion of groups and channels
+
 ### Functions
 
 _A list of files on the back-end and a sub-list of the functions they contain._
@@ -354,11 +365,16 @@ _A list of files on the back-end and a sub-list of the functions they contain._
    1. **Listen(app,PORT)** - A helper function for the server it takes in an app and a port and runs the server on that port.
 
 3. **Auth.js**
+
    1. **Login** - A function that looks at the request object(email and password) and compares it to the user database sending back a user object if the user exists and credentials are correct, if incorrect or user does not exist it sends back a valid:false.
    2. **Logout** - A function that checks passed in UUID and un-validates user.
    3. **Update** - A Function that looks at the request object, checks for a valid match in the database and updated fields accordingly.
    4. **CreateUser** - A function that looks at the request object and checks to see if the username has been registered on the database, if it has not the function creates a new User class instance (UUID is assured to be new each time) and pushes it to the database, returning the object in the response.
    5. **Delete** - A function that checks passed in UUID and deletes the user from the database.
+
+4. **Group.js**
+   1. **getAll** - A function that looks at the users UUID goes through the groups DB and returns all groups the user has been assigned to
+   2. **getAllID** - A function that grabs all groups and returns just the name and UUID of all groups
 
 ### Routes (Express)
 
@@ -468,6 +484,40 @@ _Routes that are available on the back-end and an explanation of what they do._
 
    - **DELETE:** N/A
 
+7. **"/group/all"**
+
+   - **GET:** N/A
+
+   - **POST:**
+
+     - **Function:** GetAll()
+     - **Params:** {UUID: string}
+     - **Return:** Group[]
+     - **Purpose:** Runs a function on the server to lookup associated groups for the user
+
+   - **PUT:** N/A
+
+   - **PATCH:** N/A
+
+   - **DELETE:** N/A
+
+8. **"/group/all"**
+
+   - **GET:**
+
+     - **Function:** GetAllID()
+     - **Params:** NONE
+     - **Return:** []{UUID,name}
+     - **Purpose:** Runs a function on the server to lookup all groups and return some data about them
+
+   - **POST:** N/A
+
+   - **PUT:** N/A
+
+   - **PATCH:** N/A
+
+   - **DELETE:** N/A
+
 ### Files
 
 _Files that are accessed/used by our back end._
@@ -547,5 +597,13 @@ _Description of what happens on each side of our application during a certain ev
 - **Front-End:** Session storage is wiped and user is redirected to the login screen
 
 - **Back-End:** Runs a function for removing user at a passed UUID from the database
+
+- **DataBase:** Is updated to no longer contain the user at the passed UUID
+
+### Fetch Group Data
+
+- **Front-End:** Group data is displayed on the home page of the auth routes, displaying groups youre associated in allowing connection as well as showing the other groups with a handler for requesting access.
+
+- **Back-End:** Runs a 2 functions, 1 to grab all the groups with just the ID and name, and 2 to grab all the details of groups a user is associated with
 
 - **DataBase:** Is updated to no longer contain the user at the passed UUID

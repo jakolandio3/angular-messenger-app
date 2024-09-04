@@ -3,48 +3,24 @@
 <div class="container">
   <h2>List of Your Groups</h2>
   <ul class="list-group">
-    <li class="list-group-item" *ngFor="let group of groups">
-      <a class="nav-link" [routerLink]="group.link">{{ group.name }}</a>
-    </li>
-    <li class="list-group-item">
+    <li class="list-group-item" *ngFor="let group of groupsArr">
       <div class="d-flex flex-cols justify-items-center">
-        Name: groupName
+        Name: {{ group.name }}
         <div class="d-flex flex-cols justify-items-center">
           <select name="Channels">
-            See Channels
-            <option value="Channels1">option1</option>
-            <option value="Channels2">option2</option>
-            <option value="Channels3">option3</option>
-            <option value="Channels4">option4</option>
+            <option *ngFor="let user of group.users">{{ user }}</option>
           </select>
         </div>
-        <a class="btn btn-primary" routerLink="/auth/room/1">Join Now</a>
+        <a class="btn btn-primary" routerLink="/auth/room/1{{ group.link }}"
+          >Join Now</a
+        >
       </div>
-    </li>
-    <li class="list-group-item">
-      Name: groupName
-      <button>See Channels</button>
-    </li>
-    <li class="list-group-item">
-      Name: groupName
-      <button>See Channels</button>
     </li>
   </ul>
   <h2>List of other Groups</h2>
   <ul class="list-group">
-    <li class="list-group-item" *ngFor="let group of groups">
-      <a class="nav-link" routerLink="/auth/channel/{{ group.link }}">{{
-        group.name
-      }}</a>
-    </li>
-    <li class="list-group-item">
-      Name: groupName <button>Request to Join Group</button>
-    </li>
-    <li class="list-group-item">
-      Name: groupName <button>Request to Join Group</button>
-    </li>
-    <li class="list-group-item">
-      Name: groupName <button>Request to Join Group</button>
+    <li class="list-group-item" *ngFor="let name of AllgroupsArr">
+      {{ name.name }} <button>Request to Join Group</button>
     </li>
   </ul>
 </div>
