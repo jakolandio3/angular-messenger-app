@@ -7,7 +7,7 @@ export interface userCheck {
   pwd: string;
 }
 
-type role = 'SUPERADMIN' | 'GROUPADMIN' | 'USER';
+export type role = 'SUPERADMIN' | 'GROUPADMIN' | 'USER';
 
 export interface group {
   groupID: Number;
@@ -33,10 +33,18 @@ export class CheckAuthService {
   };
   valid: any;
   getValid: any;
+  permissions: BehaviorSubject<role[]>;
+  getPermissions: any;
 
   constructor(private httpClient: HttpClient, private router: Router) {
     this.valid = new BehaviorSubject(sessionStorage.getItem('valid'));
     this.getValid = this.valid.asObservable();
+    this.permissions = new BehaviorSubject<role[]>(
+      sessionStorage.getItem('Roles')
+        ? (sessionStorage.getItem('Roles')?.split(',') as role[])
+        : ([] as role[])
+    );
+    this.getPermissions = this.permissions.asObservable();
   }
   CreateUser(data: userCheck): Observable<userObj> {
     console.log('checking', data);
@@ -90,6 +98,17 @@ export class CheckAuthService {
   checkIsValid() {
     this.valid.next(sessionStorage.getItem('valid'));
     if (this.valid && this.valid === 'true') {
+      return true;
+    } else return false;
+  }
+  checkPermissions() {
+    this.permissions.next(
+      sessionStorage.getItem('roles')?.split(',') as role[]
+    );
+    if (
+      sessionStorage.getItem('roles')?.split(',').length !== 0 &&
+      sessionStorage.getItem('roles')
+    ) {
       return true;
     } else return false;
   }

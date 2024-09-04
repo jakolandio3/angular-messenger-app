@@ -64,6 +64,7 @@ Links: TBA
   - Push Feat: Login function
   - Push Feat: Logout/Create user function
   - Push Feat: Delete User function
+- **feat/authenticated-routes**
 
 ### Git Repository Pushes/Updates
 
@@ -117,6 +118,12 @@ _A comprehensive breakdown of each commit to the remote repository along with me
 2. Delete function created on back-end
 3. Delete function created in CheckAuth Service
 4. Delete function created in Account Component
+
+#### Feat: Authenticated-Routes -feat/authenticated-routes
+
+1. Changes to readme.md
+2. Added View differences depending on user permissions
+3. added function to check authentication level to CheckAuth service
 
 ## Data Structures
 
@@ -200,7 +207,7 @@ _The Angular components available and in use on this application._
 
 3. **Admin**
 
-   - Provides authenticated and administrative users services to add, change, update or delete groups, users and channels
+   - Provides authenticated and administrative users services to add, change, update or delete groups, users and channels view is different depending on roles
 
 4. **Channel**
 
@@ -227,7 +234,7 @@ _The Angular components available and in use on this application._
 8. **Register**
 
    - Provides users to register and become authenticated
-   - Nothing else implemented Yet
+   - Submits function to back end and routes user to home page on success
 
 ### Services
 
@@ -245,6 +252,9 @@ _The Angular services available and in use on this application._
      7. GetFromSessionStorage: Gets Value From SessionStorage
      8. CreateUser: Makes a call to the server to create a new user
      9. RemoveAccount: Makes a call to the server to Delete the registered users account
+     10. CheckPermissions: Checks on the permissions of the current User
+     11. getValid: a BehaviorSubject a component can subscribe to to get isValid on user
+     12. getPermissions: a BehaviorSubject a component can subscribe to to get the array of permissions/roles on user
    - **Used In:**
      1. Login Component
      2. App Component

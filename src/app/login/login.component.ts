@@ -18,6 +18,8 @@ export class LoginComponent {
   user: any = null;
   constructor(private router: Router, private auth: CheckAuthService) {}
   loginFn() {
+    this.auth.checkPermissions();
+    this.auth.getPermissions.subscribe((e: any) => console.log(e));
     if (this.email === '' || this.password === '') {
       this.error = true;
       this.errorMsg = 'Please Enter Both an Email and a Password';
@@ -36,8 +38,8 @@ export class LoginComponent {
             this.auth.saveToSessionStorage('email', res.email);
             this.auth.saveToSessionStorage('valid', res.valid);
             this.auth.saveToSessionStorage('UUID', res.UUID);
-            this.auth.saveToSessionStorage('Groups', res.groups);
-            this.auth.saveToSessionStorage('Roles', res.roles);
+            this.auth.saveToSessionStorage('groups', res.groups);
+            this.auth.saveToSessionStorage('roles', res.roles);
 
             this.auth.checkIsValid();
             this.router.navigate(['/auth/home']);

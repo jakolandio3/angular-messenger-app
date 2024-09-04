@@ -36,6 +36,8 @@
             <li class="nav-item">
               <a class="nav-link" routerLink="/auth/home">Groups</a>
             </li>
+          </ng-template>
+          <ng-template [ngIf]="isAdmin">
             <li class="nav-item">
               <a class="nav-link" routerLink="/auth/admin">Admin</a>
             </li>
