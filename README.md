@@ -36,15 +36,28 @@ Links: TBA
 
 ## Git Repository
 
-### GitHub Link/s
+### [GitHub Link](https://github.com/jakolandio3/angular-messenger-app)
 
-https://github.com/jakolandio3/angular-messenger-app
+### GIT Commands used
+
+- **git init** _(Initialise local repository)_
+- **git add 'file'** _(Add file/s to be tracked)_
+- **git commit** _(commit the local changes with a message -m "message")_
+- **git remote add origin [url
+  to your repo]** _(Add an alias for origin to remote repo (in this case on GitHub))_
+- **git push origin [branch]** _(push the changes to remote origin on branch specified)_
+- **git checkout -b [branch name]** _(Create a new local branch name and switching to that branch)_
+- **git merge [branch name]** _(Merge another branch with your currently opened branch)_
 
 ### Git Structure
 
-1. Branches
-   1. Main
-   2. TBA
+#### **Branches/pushes**
+
+- **Main**
+  - Push Initial Commit
+  - Push Docs: Scaffold readme file
+- **feat/front-end-routes**
+  - Push Feat: Scaffold routes in front-end
 
 ### Git Repository Pushes/Updates
 
@@ -65,6 +78,14 @@ _A comprehensive breakdown of each commit to the remote repository along with me
 
 1. Major changes to readme.md
 
+#### Feat: Scaffold routes in front-end -feat/front-end-routes
+
+1. Changes to readme.md
+2. Added components Account, Admin, Channel, Groups, Login, Profile and Register
+3. Added new components to router
+4. Basic scaffold of new components
+5. basic scaffold of new components html
+
 ## Data Structures
 
 _Defines how various entities are represented in different areas of the application._
@@ -74,11 +95,11 @@ _Defines how various entities are represented in different areas of the applicat
 _A description of data structures used to represent various entities in the front-end of the application e.g interfaces or classes._
 
 1. **Users** - N/A yet
-   1. **Super Admin**
-      1. **Interface:** _Admin {name:String,id:Number,roles:Roles[],groups:Groups[]}_
-      2. **Class:** _SUPER_ADMIN implements Admin{some function()}_
-   2. **Group admin**
-   3. **User(chat user)**
+   - **Super Admin**
+     - **Interface:** _Admin {name:String,id:Number,roles:Roles[],groups:Groups[]}_
+     - **Class:** _SUPER_ADMIN implements Admin{some function()}_
+   - **Group admin**
+   - **User(chat user)**
 2. **Groups** - N/A yet
 3. **Roles** -N/A yet
 4. **Channels** - N/A yet
@@ -111,17 +132,53 @@ _The Angular components available and in use on this application._
 
 1. **App**
 
-   1. Provides Nav bar using RouterLink and Displays current Route using Router-Outlet
-   2. Nothing else implemented Yet
+   - Provides Nav bar using RouterLink and Displays current Route using Router-Outlet
+   - Nothing else implemented Yet
+
+2. **Account**
+
+   - Provides authenticated users with details of their account available to update
+   - Nothing else implemented Yet
+
+3. **Admin**
+
+   - Provides authenticated and administrative users services to add, change, update or delete groups, users and channels
+
+4. **Channel**
+
+   - Provides authenticated users to access a particular channel and display, send and receive messages
+   - Nothing else implemented Yet
+
+5. **Groups**
+
+   - Provides authenticated users with a view of groups dependent on your authorization level/role and if you are in said group
+   - Nothing else implemented Yet
+
+6. **Login**
+
+   - Provides users with a way to authenticate and login
+   - Provides a username and password form for users to login
+   - Will contain a function for login
+
+7. **Profile**
+
+   - Provides authenticated users with a view of their details
+   - Details are rendered from logged in user
+   - Nothing else implemented Yet
+
+8. **Register**
+
+   - Provides users to register and become authenticated
+   - Nothing else implemented Yet
 
 ### Services
 
 _The Angular services available and in use on this application._
 
 1. **"none yet"**
-   1. **Description:**
-   2. **Available Functions:**
-   3. **Used In:**
+   - **Description:**
+   - **Available Functions:**
+   - **Used In:**
 
 ### Routes (Angular)
 
@@ -129,17 +186,59 @@ _The available routes/endpoints we can hit on our front-end Angular project._
 
 1. **"/" (App Route)**
 
-   1. Displays App Component
-   2. Will provide Navigation
-   3. Will most likely re-direct later to home or login
+   - Displays App Component
+   - Will provide Navigation
+   - Will most likely re-direct later to home or login
 
-2. Thats it so far
+2. **"/login"**
+
+   - Displays Login Component
+   - Will provide Navigation
+   - Will most likely re-direct later to home if user is authenticated already
+
+3. **"/register"**
+
+   - Displays Register Component
+   - Will provide navigation upon registration to redirect user to home
+
+4. **"/auth"**
+
+   - redirects to /auth/home if authenticated and to /login if not
+
+5. **"/auth/home" (App Route)**
+
+   - Displays Groups Component
+   - Will re-direct if unauthorized to /login
+
+6. **"/auth/profile" (App Route)**
+
+   - Displays Profile Component
+   - Will re-direct if unauthorized to /login
+
+7. **"/auth/room" (App Route)**
+
+   - Will re-direct if authorized to /auth/home or if unauthorized will redirect to /login
+
+8. **"/auth/room/:id" (App Route)**
+
+   - Displays Channel Component
+   - Will re-direct if unauthorized to /login
+
+9. **"/auth/account" (App Route)**
+
+   - Displays Account Component
+   - Will redirect if unauthorized
+
+10. **"/auth/admin" (App Route)**
+
+    - Displays Admin Component
+    - Will redirect if unauthorized to /login, if authorized but not an admin it will redirect to /auth/home
 
 ## Server (Express) Architecture
 
 _The set up and structure of the back-end of the application._
 
-### Modules
+### Modules (back-end)
 
 _A list of the module files that contain functions imported and used on the server._
 
@@ -164,24 +263,24 @@ _A list of files on the back-end and a sub-list of the functions they contain._
 
 ### Routes (Express)
 
-_Routes that are available on the back-end and an explenation of what they do._
+_Routes that are available on the back-end and an explanation of what they do._
 
 1. **"/"**
 
-   **GET:**
+   - **GET:**
 
-   1. **Function:** basic lambda arrow function
-   2. **Params:** None
-   3. **Return:** "hello"
-   4. **Purpose:** Respond the a successful connection to the server
+     - **Function:** basic lambda arrow function
+     - **Params:** None
+     - **Return:** "hello"
+     - **Purpose:** Respond the a successful connection to the server
 
-   **POST:** N/A
+   - **POST:** N/A
 
-   **PUT:** N/A
+   - **PUT:** N/A
 
-   **PATCH:** N/A
+   - **PATCH:** N/A
 
-   **DELETE:** N/A
+   - **DELETE:** N/A
 
 ### Files
 
@@ -208,18 +307,18 @@ _Node modules installed to our application._
 
 ### Modules (Installed Node Modules)
 
-1. **Front End (Angular)**
+- **Front End (Angular)**
 
-   1. **npm i -g @angular/cli** _(Install Angular CLI Globally)_
-   2. **npm i bootstrap -save** _(Install and save bootstrap locally for the project)_
-      **\*_note: Bootstrap requires you to update the "styles" array in the angular.json file and add bootstrap css file {"node_modules/bootstrap/dist/css/bootstrap.min.css",}_**
-   3. **npm i socket.io-client** _(Install socket.io for client side allowing bi-directional communication)_
+  - **npm i -g @angular/cli** _(Install Angular CLI Globally)_
+  - **npm i bootstrap -save** _(Install and save bootstrap locally for the project)_
+    **\*_note: Bootstrap requires you to update the "styles" array in the angular.json file and add bootstrap css file {"node_modules/bootstrap/dist/css/bootstrap.min.css",}_**
+  - **npm i socket.io-client** _(Install socket.io for client side allowing bi-directional communication)_
 
-2. **Back End (Express)**
-   1. **npm i cors -save** _(Install cors for cross origin handling)_
-   2. **npm i express** _(Install express for our back end in server folder)_
-   3. **npm i nodemon -g** _(Install global nodemon for hot-reload on our server side)_
-   4. **npm i socket.io** _(Install socket.io for our server side allowing bi-directional communication)_
+- **Back End (Express)**
+  - **npm i cors -save** _(Install cors for cross origin handling)_
+  - **npm i express** _(Install express for our back end in server folder)_
+  - **npm i nodemon -g** _(Install global nodemon for hot-reload on our server side)_
+  - **npm i socket.io** _(Install socket.io for our server side allowing bi-directional communication)_
 
 ## Client Server Interaction
 
@@ -227,32 +326,32 @@ _Description of what happens on each side of our application during a certain ev
 
 ### Login User
 
-1. **Front-End:** does this
+- **Front-End:** does this
 
-2. **Back-End:** does this
+- **Back-End:** does this
 
-3. **DataBase:** does this
+- **DataBase:** does this
 
 ### Logout User
 
-1. **Front-End:** does this
+- **Front-End:** does this
 
-2. **Back-End:** does this
+- **Back-End:** does this
 
-3. **DataBase:** does this
+- **DataBase:** does this
 
 ### Update User
 
-1. **Front-End:** does this
+- **Front-End:** does this
 
-2. **Back-End:** does this
+- **Back-End:** does this
 
-3. **DataBase:** does this
+- **DataBase:** does this
 
 ### Delete User
 
-1. **Front-End:** does this
+- **Front-End:** does this
 
-2. **Back-End:** does this
+- **Back-End:** does this
 
-3. **DataBase:** does this
+- **DataBase:** does this
