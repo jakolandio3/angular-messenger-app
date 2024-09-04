@@ -58,6 +58,7 @@ Links: TBA
   - Push Docs: Scaffold readme file
   - Merge feat/front-end-routes
   - Merge feat/login-logout
+  - Merge feat/authenticated-routes
 - **feat/front-end-routes**
   - Push Feat: Scaffold routes in front-end
 - **feat/login-logout**
@@ -65,6 +66,7 @@ Links: TBA
   - Push Feat: Logout/Create user function
   - Push Feat: Delete User function
 - **feat/authenticated-routes**
+  - Push Feat: Authenticated-Route
 
 ### Git Repository Pushes/Updates
 
