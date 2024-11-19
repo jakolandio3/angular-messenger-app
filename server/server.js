@@ -28,9 +28,21 @@ app.post("/api/auth/update", require("./routes/api/auth").Update);
 app.post("/api/auth/logout", require("./routes/api/auth").Logout);
 app.post("/api/auth/register", require("./routes/api/auth").CreateUser);
 app.post("/api/auth/delete", require("./routes/api/auth").Delete);
+app.post("/api/auth/users", require("./routes/api/auth").GetAllUsers);
 // group calls
 app.post("/api/groups/all", require("./routes/api/group").getAll);
 app.get("/api/groups/id", require("./routes/api/group").getAllID);
+app.post("/api/groups/getbyid", require("./routes/api/group").getGroupByID);
 app.post("/api/groups/assign", require("./routes/api/group").assignUserToGroup);
 app.post("/api/groups/create", require("./routes/api/group").createNewGroup);
+app.post("/api/groups/delete", require("./routes/api/group").deleteGroupByID);
+app.post(
+  "/api/groups/create/channel",
+  require("./routes/api/group").createNewChannel
+);
+app.post(
+  "/api/groups/details/channel",
+  require("./routes/api/group").getChannelDetails
+);
 // just checking the server is running
+app.post("/api/users/id", require("./routes/api/auth").GetByID);

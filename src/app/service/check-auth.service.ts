@@ -129,4 +129,11 @@ export class CheckAuthService {
   getFromSessionStorage(key: keyof userObj) {
     return sessionStorage.getItem(key);
   }
+  getUserList(): Observable<any> {
+    return this.httpClient.post(
+      this.BACKENDURL + '/api/auth/users',
+      JSON.stringify({ data: this.getFromSessionStorage('UUID') }),
+      this.httpOptions
+    );
+  }
 }

@@ -3,6 +3,43 @@ const DATABASE = require("../../config/index");
 const fs = require("fs");
 
 module.exports = {
+  GetByID: function (req, res) {
+    const userID = req.body.data;
+    fs.readFile(DATABASE.USERS_DB, "utf-8", function (error, data) {
+      if (error) throw error;
+      let userArr = JSON.parse(data);
+      let i = userArr.findIndex((user) => user.UUID === +userID);
+      if (i === -1) {
+        res.send({ error: "No User Found" });
+      } else {
+        const usersName = userArr[i].username;
+        res.send(JSON.stringify(usersName));
+      }
+    });
+  },
+  GetAllUsers: function (req, res) {
+    const userID = req.body.data;
+    const allUsersList = [];
+    fs.readFile(DATABASE.USERS_DB, "utf-8", function (error, data) {
+      if (error) throw error;
+      let userArr = JSON.parse(data);
+      let i = userArr.findIndex((user) => user.UUID === +userID);
+      if (i === -1) {
+        res.send({ error: "Not Authorized User" });
+      } else {
+        const curUser = userArr[i];
+        if (!curUser.roles.includes("SUPERADMIN")) {
+          res.send({ error: "User Not Authorized" });
+        } else {
+          for (let i = 0; i < userArr.length; i++) {
+            let userData = { name: userArr[i].username, UUID: userArr[i].UUID };
+            allUsersList.push(userData);
+          }
+          res.send(JSON.stringify(allUsersList));
+        }
+      }
+    });
+  },
   Login: function (req, res) {
     const { email, pwd } = req.body;
     console.log(req.body);

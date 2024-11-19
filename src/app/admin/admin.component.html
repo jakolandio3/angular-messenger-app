@@ -1,94 +1,254 @@
 <div class="container">
   <h1>Admin Settings</h1>
-
+  <div [hidden]="!updated" class="alert alert-success">
+    {{ alertMessage }}
+  </div>
   <h2>Groups</h2>
-  <div class="card">
+  <div class="mb-2">
+    <input type="text" class="rounded" [(ngModel)]="newGroupName" /><button
+      class="rounded bg-primary-subtle"
+      (click)="createNewGroup()"
+    >
+      Create new group
+    </button>
+  </div>
+  <div class="card border-success border-5 bg-success-subtle">
     <div class="card-body">
-      <input type="text" [(ngModel)]="newGroupName" /><button
-        (click)="createNewGroup()"
-      >
-        Create new group
-      </button>
-
-      <div class="card">
-        <h2>This group</h2>
-        <button>delete</button><button>rename</button>
-        <select name="users" id="usersofgroup">
-          <option value="default" hidden="true">Users</option>
-          <option value="">user 1</option>
-          <option value="">user 1</option>
-          <option value="">user 1</option>
-          <option value="">user 1</option>
-        </select>
-        <button>Delete user</button>
-        <select name="users" id="usersofgroup">
-          <option value="default" hidden="true">User Requests</option>
-          <option value="">user 1</option>
-          <option value="">user 1</option>
-          <option value="">user 1</option>
-          <option value="">user 1</option>
-        </select>
-        <button>Add User</button>
-        <!-- Add your code for group settings here -->
-        <h3>Channels</h3>
-        <div class="card">
-          <div class="card-body">
-            <input type="text" /><button>Create new Channel</button>
-            <div class="card">
-              <h2>This Channel</h2>
-              <button>delete</button><button>rename</button>
-              <select name="users" id="usersofgroup">
-                <option value="default" hidden="true">select users</option>
-                <option value="">user 1</option>
-                <option value="">user 1</option>
-                <option value="">user 1</option>
-                <option value="">user 1</option>
+      <div class="card bg-success-subtle border-0">
+        <h2 class="border-bottom border-success">{{ currentGroup.name }}</h2>
+        <div class="d-flex justify-content-end m-2 gap-1">
+          <select
+            name="group"
+            #nameOfGroup
+            (change)="onSelectGroup(nameOfGroup.value)"
+            class="bg-success flex-grow-1 rounded"
+          >
+            <option value="default" hidden="true">Select a Group...</option>
+            <option *ngFor="let group of groupList">{{ group.name }}</option>
+          </select>
+          <button
+            (click)="deleteGroup()"
+            *ngIf="groupSelected"
+            class="border-danger rounded bg-danger-subtle"
+          >
+            delete</button
+          ><button
+            *ngIf="groupSelected"
+            class="border-primary rounded bg-primary-subtle"
+          >
+            rename
+          </button>
+        </div>
+        <div class="" *ngIf="groupSelected">
+          <h4>Admins</h4>
+          <ul>
+            <li *ngFor="let admin of selectedGroupAdmins">{{ admin }}</li>
+          </ul>
+        </div>
+        <div class="" *ngIf="groupSelected">
+          <div class="">
+            <h4 class="border-bottom border-success">Join requests</h4>
+            <div class="d-flex gap-2 m-2">
+              <select
+                name="users"
+                id="usersofgroup"
+                class="bg-success flex-grow-1 rounded"
+                #requestedUserID
+                (change)="onJoinRequest(requestedUserID.value)"
+              >
+                <option value="default" hidden="true">User Requests</option>
+                <option value="example">Test User</option>
+                <option
+                  *ngFor="let user of selectedGroupDetails?.requests"
+                  value="{{ user?.UUID }}"
+                >
+                  {{ user?.name }}
+                </option>
               </select>
-
-              <button>Ban user</button>
+              <button
+                class="border-primary rounded bg-primary-subtle"
+                *ngIf="requestUserSelected"
+                (click)="onAddUserToGroup()"
+              >
+                Add User
+              </button>
             </div>
-            <!-- Add your code for channel settings here -->
+            <h4 class="border-bottom border-success">
+              Users in "{{ currentGroup.name }}"
+            </h4>
+            <div class="d-flex gap-2 m-2">
+              <select
+                name="users"
+                #nameOfUser
+                (change)="onSelectUserGroup(nameOfUser.value)"
+                class="bg-success flex-grow-1 rounded"
+              >
+                <option value="default" hidden="true">Select a User</option>
+                <option
+                  *ngFor="let users of selectedGroupDetails.users"
+                  value="{{ users }}"
+                >
+                  {{ users }}
+                </option>
+                >
+              </select>
+              <div class="d-flex gap-1" *ngIf="groupUserSelected">
+                <div class="d-flex gap-1" *ngIf="groupUserSelected">
+                  "{{ currentGroupUser.name }}"
+                </div>
+
+                <button class="border-danger rounded bg-danger-subtle">
+                  Remove user
+                </button>
+                <button class="border-danger rounded bg-danger-subtle">
+                  Ban user
+                </button>
+                <button
+                  *ngIf="!selectedUserisGroupAdmin"
+                  class="border-primary rounded bg-primary-subtle"
+                >
+                  Promote to Admin
+                </button>
+                <button
+                  *ngIf="selectedUserisGroupAdmin"
+                  class="border-primary rounded bg-primary-subtle"
+                >
+                  Remove Admin rights
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Add your code for group settings here -->
+        <div class="" *ngIf="groupSelected">
+          <h4 class="border-bottom border-success">
+            Channels in "{{ currentGroup.name }}"
+          </h4>
+          <div class="d-flex m-2 gap-1">
+            <select
+              name="channel"
+              #nameOfChannel
+              (change)="onSelectChannel(nameOfChannel.value)"
+              class="bg-success flex-grow-1 rounded"
+            >
+              <option value="default" hidden="true">Select a Channel</option>
+              <option *ngFor="let channel of channelList">
+                {{ channel }}
+              </option>
+            </select>
+            <div class="" *ngIf="channelSelected">
+              <h4>"{{ currentChannelName }}"</h4>
+            </div>
+            <div class="" *ngIf="channelSelected">
+              <button class="border-danger rounded bg-danger-subtle">
+                delete</button
+              ><button class="border-primary rounded bg-primary-subtle">
+                rename
+              </button>
+            </div>
+          </div>
+          <div class="d-flex mx-2 gap-2">
+            <input
+              type="text"
+              class="rounded flex-grow-1"
+              [(ngModel)]="newChannelName"
+            /><button
+              class="rounded bg-primary-subtle border-primary"
+              (click)="createNewChannel()"
+            >
+              Create new Channel
+            </button>
           </div>
         </div>
       </div>
     </div>
   </div>
-
   <div class="" *ngIf="isSuperAdmin">
-    <h2>Users</h2>
-    <div class="card">
+    <h2>All Users</h2>
+    <div class="card border-success border-5 bg-success-subtle">
       <div class="card-body">
-        <select name="users" id="usersofgroup">
-          <option value="default" hidden="true">Users</option>
-          <option value="">user 1</option>
-          <option value="">user 1</option>
-          <option value="">user 1</option>
-          <option value="">user 1</option>
-        </select>
-        <select name="users" id="usersofgroup">
-          <option value="default" hidden="true">Change role</option>
-          <option value="">Delete user</option>
-          <option value="">Change to Super Admin</option>
-          <option value="">Change to Group Admin</option>
-          <option value="">user 1</option>
-        </select>
-        <button>Delete/Upgrage User</button>
-        <select name="users" id="usersofgroup">
-          <option value="default" hidden="true">Groups</option>
-          <option value="">user 1</option>
-          <option value="">user 1</option>
-          <option value="">user 1</option>
-          <option value="">user 1</option>
-        </select>
-        <button>Change to admin</button>
+        <h2 class="border-bottom border-success">{{ currentUser.name }}</h2>
+        <div class="d-flex m-2 gap-2">
+          <select
+            name="users"
+            id="usersofgroup"
+            #userToUpgrade
+            (change)="onSelectUser(userToUpgrade.value)"
+            class="bg-success flex-grow-1 rounded"
+          >
+            <option value="default" hidden="true">Select a User...</option>
+            <option *ngFor="let user of adminUserList" value="{{ user.UUID }}">
+              {{ user.name }}
+            </option>
+          </select>
+          <select
+            name="option"
+            id="adminOption"
+            class="bg-success rounded"
+            #adminOption
+            *ngIf="userSelected"
+            (change)="onSelectAdminOption(adminOption.value)"
+          >
+            <option value="default" hidden="true">Change role</option>
+            <option value="DELETE">Delete user</option>
+            <option value="SUPER">Change to Super Admin</option>
+            <option value="ADMIN">Change to Group Admin</option>
+            <option value="ADD">Add to Group</option>
+          </select>
+          <button
+            *ngIf="isDeleteUser"
+            class="rounded border-danger bg-danger-subtle"
+          >
+            Delete User
+          </button>
+          <button
+            *ngIf="isPromoteToSuper"
+            class="rounded border-primary bg-primary-subtle"
+          >
+            Add as "Super User"
+          </button>
+        </div>
+        <div
+          class="d-flex m-2 gap-2"
+          *ngIf="isPromoteToAdmin || isAddUserToGroup"
+        >
+          <select
+            name="users"
+            id="usersofgroup"
+            class="bg-success rounded flex-grow-1"
+            #groupToPromote
+            (change)="selectGroupToPromote(groupToPromote.value)"
+          >
+            <option value="default" hidden="true">Groups</option>
+            <option *ngFor="let group of groupList" value="{{ group.UUID }}">
+              {{ group.name }}
+            </option>
+          </select>
+          <button
+            class="rounded border-primary bg-primary-subtle"
+            *ngIf="hasSelectedNewAdmin && !isAddUserToGroup"
+          >
+            Upgrade user to admin
+          </button>
+          <button
+            class="rounded border-primary bg-primary-subtle"
+            *ngIf="hasSelectedNewAdmin && isAddUserToGroup"
+          >
+            Add To Group
+          </button>
+        </div>
       </div>
     </div>
-    <h2>Messages</h2>
-    <div class="card">
-      <div class="card-body">
-        <div class="card">User: 0090 in group: 2323 was banned</div>
-        <div class="card">User: 0090 in group: 2323 was banned</div>
-      </div>
+  </div>
+  <h2>Admin Messages</h2>
+  <div class="card border-success border-5 bg-success-subtle">
+    <div class="d-flex flex-column gap-2 m-4">
+      <li
+        *ngFor="let message of adminMessages"
+        class="list-unstyled bg-white mt-2 rounded px-3 border-primary border bg-primary-subtle"
+      >
+        {{ message }}
+      </li>
     </div>
   </div>
 </div>
