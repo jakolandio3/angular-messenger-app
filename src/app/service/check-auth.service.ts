@@ -136,4 +136,24 @@ export class CheckAuthService {
       this.httpOptions
     );
   }
+  adminDeleteUser(userID: string): Observable<any> {
+    const adminID = this.getFromSessionStorage('UUID');
+    const body = { adminID: adminID, userID: userID };
+
+    return this.httpClient.post(
+      `${this.BACKENDURL}/api/auth/delete/admin`,
+      body,
+      this.httpOptions
+    );
+  }
+  adminMakeSuper(userID: string): Observable<any> {
+    const adminID = this.getFromSessionStorage('UUID');
+    const body = { adminID: adminID, userID: userID };
+
+    return this.httpClient.post(
+      `${this.BACKENDURL}/api/auth/super/admin`,
+      body,
+      this.httpOptions
+    );
+  }
 }

@@ -79,11 +79,11 @@
             <div class="d-flex gap-2 m-2">
               <select
                 name="users"
-                #nameOfUser
-                (change)="onSelectUserGroup(nameOfUser.value)"
+                [(ngModel)]="nameOfUser"
+                (change)="onSelectUserGroup(nameOfUser)"
                 class="bg-success flex-grow-1 rounded"
               >
-                <option value="default" hidden="true">Select a User</option>
+                <option value="" hidden="true">Select a User</option>
                 <option
                   *ngFor="let users of selectedGroupDetails.users"
                   value="{{ users }}"
@@ -97,19 +97,27 @@
                   "{{ currentGroupUser.name }}"
                 </div>
 
-                <button class="border-danger rounded bg-danger-subtle">
+                <button
+                  (click)="onUpdateUserFromGroup('REMOVE')"
+                  class="border-danger rounded bg-danger-subtle"
+                >
                   Remove user
                 </button>
-                <button class="border-danger rounded bg-danger-subtle">
+                <button
+                  (click)="onUpdateUserFromGroup('BAN')"
+                  class="border-danger rounded bg-danger-subtle"
+                >
                   Ban user
                 </button>
                 <button
+                  (click)="onUpdateUserFromGroup('PROMOTE')"
                   *ngIf="!selectedUserisGroupAdmin"
                   class="border-primary rounded bg-primary-subtle"
                 >
                   Promote to Admin
                 </button>
                 <button
+                  (click)="onUpdateUserFromGroup('DEMOTE')"
                   *ngIf="selectedUserisGroupAdmin"
                   class="border-primary rounded bg-primary-subtle"
                 >
@@ -127,11 +135,11 @@
           <div class="d-flex m-2 gap-1">
             <select
               name="channel"
-              #nameOfChannel
-              (change)="onSelectChannel(nameOfChannel.value)"
+              [(ngModel)]="currentChannel"
+              (change)="onSelectChannel(currentChannel)"
               class="bg-success flex-grow-1 rounded"
             >
-              <option value="default" hidden="true">Select a Channel</option>
+              <option value="" hidden="true">Select a Channel</option>
               <option *ngFor="let channel of channelList">
                 {{ channel }}
               </option>
@@ -140,7 +148,10 @@
               <h4>"{{ currentChannelName }}"</h4>
             </div>
             <div class="" *ngIf="channelSelected">
-              <button class="border-danger rounded bg-danger-subtle">
+              <button
+                (click)="onDeleteChannel()"
+                class="border-danger rounded bg-danger-subtle"
+              >
                 delete</button
               ><button class="border-primary rounded bg-primary-subtle">
                 rename
@@ -172,11 +183,11 @@
           <select
             name="users"
             id="usersofgroup"
-            #userToUpgrade
-            (change)="onSelectUser(userToUpgrade.value)"
+            [(ngModel)]="userToUpgrade"
+            (change)="onSelectUser(userToUpgrade)"
             class="bg-success flex-grow-1 rounded"
           >
-            <option value="default" hidden="true">Select a User...</option>
+            <option value="" hidden="true">Select a User...</option>
             <option *ngFor="let user of adminUserList" value="{{ user.UUID }}">
               {{ user.name }}
             </option>
@@ -198,10 +209,12 @@
           <button
             *ngIf="isDeleteUser"
             class="rounded border-danger bg-danger-subtle"
+            (click)="onAdminDeleteUser()"
           >
             Delete User
           </button>
           <button
+            (click)="onAdminCreateSuper()"
             *ngIf="isPromoteToSuper"
             class="rounded border-primary bg-primary-subtle"
           >
@@ -227,10 +240,12 @@
           <button
             class="rounded border-primary bg-primary-subtle"
             *ngIf="hasSelectedNewAdmin && !isAddUserToGroup"
+            (click)="onAdminAddGroupAdmin()"
           >
             Upgrade user to admin
           </button>
           <button
+            (click)="onAdminAddToGroup()"
             class="rounded border-primary bg-primary-subtle"
             *ngIf="hasSelectedNewAdmin && isAddUserToGroup"
           >

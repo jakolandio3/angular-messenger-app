@@ -100,10 +100,13 @@ module.exports = {
               let r = allGroups[i].requests.findIndex(
                 (req) => req.UUID === +userID
               );
-              if (r === -1) {
+              if (r === -1 && !allUsers[j].roles.includes("SUPERADMIN")) {
                 res.send({ error: "User request was not found" });
               } else {
                 if (allUsers[j].roles.includes("SUPERADMIN")) {
+                  if (allGroups[i].users.includes(userID)) {
+                    return res.send({ error: "User already exists in group" });
+                  }
                   allGroups[i].users.push(userID);
                   allGroups[i].requests.splice(r, 1);
                   const stringifiedFile = JSON.stringify(allGroups);
@@ -572,6 +575,12 @@ module.exports = {
               "utf-8",
               (error) => console.log(error)
             );
+            return res.send(
+              JSON.stringify({
+                ok: true,
+                message: `Channel: ${name} was added to Group: ${group}`,
+              })
+            );
           });
         });
       } else if (allUsers[j].roles.includes("USERADMIN" && !"SUPERADMIN")) {
@@ -599,12 +608,83 @@ module.exports = {
                 "utf-8",
                 (error) => console.log(error)
               );
+              return res.send(
+                JSON.stringify({
+                  ok: true,
+                  message: `Channel: ${name} was added to Group: ${group}`,
+                })
+              );
             });
           }
 
-          res.send("Channel Updated");
+          return res.send(
+            JSON.stringify({ ok: true, message: "Channel added" })
+          );
         });
       } else res.send({ error: "Not Authenticated" });
+    });
+  },
+  deleteChannelByID: (req, res) => {
+    const { adminID, groupID, channelID } = req.body;
+    return fs.readFile(DATABASE.USERS_DB, "utf8", (error, data) => {
+      let allUsers = JSON.parse(data);
+      let j = allUsers.findIndex((user) => user.UUID === +adminID);
+      if (j === -1) {
+        console.log("no user found");
+        return res.send(
+          JSON.stringify({ error: "No account for Admin found" })
+        );
+      }
+      if (!allUsers[j].roles.includes("SUPERADMIN" || "USERADMIN")) {
+        return res.send(
+          JSON.stringify({ error: "Not Authorized to perform this action" })
+        );
+      }
+      fs.readFile(DATABASE.GROUPS_DB, "utf-8", (error, data) => {
+        let allGroups = JSON.parse(data);
+        let g = allGroups.findIndex((group) => group.UUID === +groupID);
+        if (
+          allUsers[j].roles.includes("SUPERADMIN") ||
+          allGroups[g].admins.includes(adminID)
+        ) {
+          let newChannels = allGroups[g].channels.filter(
+            (channel) => channel !== +channelID
+          );
+          allGroups[g].channels = newChannels;
+          console.log("new Channels");
+
+          fs.writeFile(
+            DATABASE.GROUPS_DB,
+            JSON.stringify(allGroups),
+            "utf-8",
+            (error) => console.log(error)
+          );
+          fs.readFile(DATABASE.CHANNELS_DB, "utf-8", (error, data) => {
+            let allChannels = JSON.parse(data);
+            let c = allChannels.findIndex((ch) => ch.UUID === +channelID);
+            if (c === -1) {
+              return res.send(
+                JSON.stringify({
+                  error: "Channel can't be located on Database",
+                })
+              );
+            }
+            allChannels.splice(c, 1);
+            fs.writeFile(
+              DATABASE.CHANNELS_DB,
+              JSON.stringify(allChannels),
+              "utf-8",
+              (error) => console.log(error)
+            );
+            return res.send(
+              JSON.stringify({
+                ok: true,
+                message: `Channel: ${channelID} successfully removed from Group: ${groupID}`,
+              })
+            );
+          });
+        } else return res.send({ error: "User does not have permission" });
+      });
     });
   },
 };

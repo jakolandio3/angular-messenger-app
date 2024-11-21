@@ -64,7 +64,7 @@ export class GroupFunctionsService {
       action,
     };
     return this.http.post(
-      `${this.BACKENDURL}/api/groups/update/userUUID`,
+      `${this.BACKENDURL}/api/groups/update/user`,
       body,
       this.httpOptions
     );
@@ -110,6 +110,21 @@ export class GroupFunctionsService {
       this.httpOptions
     );
   }
+
+  deleteChannel(groupID: string, channelID: string) {
+    const thisUserID = this.auth.getFromSessionStorage('UUID');
+    const body = {
+      adminID: thisUserID,
+      groupID,
+      channelID,
+    };
+    return this.http.post(
+      `${this.BACKENDURL}/api/groups/delete/channel`,
+      body,
+      this.httpOptions
+    );
+  }
+
   getChannelNames(groupUUID: string, channelUUID: string): Observable<any> {
     const thisUserID = this.auth.getFromSessionStorage('UUID');
     const body = {

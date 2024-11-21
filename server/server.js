@@ -28,6 +28,11 @@ app.post("/api/auth/update", require("./routes/api/auth").Update);
 app.post("/api/auth/logout", require("./routes/api/auth").Logout);
 app.post("/api/auth/register", require("./routes/api/auth").CreateUser);
 app.post("/api/auth/delete", require("./routes/api/auth").Delete);
+app.post("/api/auth/delete/admin", require("./routes/api/auth").AdminDelete);
+app.post(
+  "/api/auth/super/admin",
+  require("./routes/api/auth").AdminCreateSuper
+);
 app.post("/api/auth/users", require("./routes/api/auth").GetAllUsers);
 // group calls
 app.post("/api/groups/all", require("./routes/api/group").getAll);
@@ -37,8 +42,16 @@ app.post("/api/groups/assign", require("./routes/api/group").assignUserToGroup);
 app.post("/api/groups/create", require("./routes/api/group").createNewGroup);
 app.post("/api/groups/delete", require("./routes/api/group").deleteGroupByID);
 app.post(
+  "/api/groups/update/user",
+  require("./routes/api/group").updateUserGroupRoles
+);
+app.post(
   "/api/groups/create/channel",
   require("./routes/api/group").createNewChannel
+);
+app.post(
+  "/api/groups/delete/channel",
+  require("./routes/api/group").deleteChannelByID
 );
 app.post(
   "/api/groups/details/channel",

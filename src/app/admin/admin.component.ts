@@ -44,6 +44,8 @@ export class AdminComponent {
   userToAdd: string = '';
   requestUserSelected: boolean = false;
   selectedUserisGroupAdmin: boolean = false;
+  nameOfUser: string = '';
+  userToUpgrade: string = '';
 
   constructor(
     private auth: CheckAuthService,
@@ -59,9 +61,9 @@ export class AdminComponent {
       .subscribe((val: any) => this.groupList.push(...val));
     console.log(this.groupList);
     if (this.isAdmin) {
-      this.auth
-        .getUserList()
-        .subscribe((users: any) => (this.adminUserList = users));
+      this.auth.getUserList().subscribe((users: any) => {
+        this.adminUserList = users;
+      });
     }
   }
 
@@ -97,9 +99,14 @@ export class AdminComponent {
 
   onSelectGroup(value: any) {
     this.channelSelected = false;
+    this.currentChannel = '';
+    this.channelSelected = false;
     this.currentChannelName = '';
+    this.newChannelName = '';
     this.selectedGroupAdmins = [];
     this.currentUser = { UUID: '', name: '' };
+    this.currentGroupUser = { UUID: '', name: '' };
+    this.groupUserSelected = false;
     this.currentGroup = this.groupList.filter(
       (group: any) => group.name === value
     )[0];
@@ -145,19 +152,24 @@ export class AdminComponent {
     });
   }
 
-  onRemoveUserFromGroup() {
+  onUpdateUserFromGroup(ACTION: string) {
     if (!this.groupUserSelected) {
-      return;
+      return console.log('something went wrong');
     }
     this.groupservice
       .updateUserGroupPermissions(
         this.currentGroupUser.UUID,
         this.currentGroup.UUID,
-        'REMOVE'
+        ACTION
       )
       .subscribe(
-        (res: any) => console.log(res),
-        (e: any) => console.log(e)
+        (res: any) => {
+          this.alertMessage = res.message;
+          this.updated = true;
+          this.nameOfUser = '';
+        },
+        (e: any) => console.log(e),
+        () => this.onSelectGroup(this.currentGroup.name)
       );
   }
 
@@ -195,18 +207,46 @@ export class AdminComponent {
   createNewChannel() {
     this.groupservice
       .createNewChannel(this.newChannelName, this.currentGroup.UUID)
-      .subscribe((res: any) => console.log(res));
-    this.alertMessage = `${this.newChannelName} was created`;
-    this.updated = true;
-    this.newChannelName = '';
-    this.groupservice.getAllGroups().subscribe((val: any) => {
-      this.groupList = [];
-      this.groupList.push(...val);
-    });
-    this.groupSelected = false;
-    this.currentGroup = '';
+      .subscribe(
+        (res: any) => {
+          console.log(res);
+          this.alertMessage = res.message;
+          this.updated = true;
+        },
+        (e) => console.log(e),
+        () => this.onSelectGroup(this.currentGroup.name)
+      );
   }
 
+  onDeleteChannel() {
+    if (!window.confirm('Are you sure you want to delete this channel?')) {
+      return;
+    }
+    this.groupservice
+      .deleteChannel(this.currentGroup.UUID, this.currentChannel)
+      .subscribe(
+        (res: any) => {
+          if (!res?.ok) {
+            this.alertMessage = res.error;
+            this.updated = true;
+            return;
+          }
+          this.alertMessage = res.message;
+          this.updated = true;
+        },
+        (e) => console.log(e),
+        () => this.onSelectGroup(this.currentGroup.name)
+      );
+  }
+
+  onSelectChannel(value: any) {
+    this.channelSelected = true;
+    this.groupservice
+      .getChannelNames(this.currentGroup.UUID, value)
+      .subscribe((res: any) => {
+        this.currentChannelName = res.name;
+      });
+  }
   onSelectUser(value: any) {
     console.log(value);
     this.currentUser.UUID = value;
@@ -219,16 +259,6 @@ export class AdminComponent {
         this.currentUser.name = '';
       }
     });
-  }
-
-  onSelectChannel(value: any) {
-    this.currentChannel = value;
-    this.channelSelected = true;
-    this.groupservice
-      .getChannelNames(this.currentGroup.UUID, value)
-      .subscribe((res: any) => {
-        this.currentChannelName = res.name;
-      });
   }
   onSelectAdminOption(value: any) {
     this.isPromoteToAdmin = false;
@@ -266,5 +296,124 @@ export class AdminComponent {
   selectGroupToPromote(val: any) {
     this.selectedAdminGroup = val;
     this.hasSelectedNewAdmin = true;
+  }
+  onAdminAddToGroup() {
+    if (!this.userSelected || !this.isAddUserToGroup) {
+      return;
+    }
+    this.groupservice
+      .assignToGroup(this.currentUser.UUID, this.selectedAdminGroup)
+      .subscribe(
+        (res) => {
+          if (!res?.ok) {
+            this.alertMessage = `${res.error}`;
+            this.updated = true;
+            this.userToAdd = '';
+            this.requestUserSelected = false;
+            return;
+          }
+          this.userToAdd = '';
+          this.requestUserSelected = false;
+          this.alertMessage = `${res.message}`;
+          this.updated = true;
+
+          console.log(res);
+        },
+        (e) => console.log(e),
+        () => {
+          console.log('finished');
+          this.hasSelectedNewAdmin = false;
+          this.userToUpgrade = '';
+          this.selectedAdminGroup = '';
+          this.isPromoteToAdmin = false;
+          this.isPromoteToSuper = false;
+          this.isDeleteUser = false;
+          this.isAddUserToGroup = false;
+          this.userSelected = false;
+          this.currentUser = { UUID: '', name: '' };
+        }
+      );
+  }
+  onAdminAddGroupAdmin() {
+    if (!this.userSelected || !this.isPromoteToAdmin) {
+      return;
+    }
+    this.groupservice
+      .updateUserGroupPermissions(
+        this.currentUser.UUID,
+        this.selectedAdminGroup,
+        'PROMOTE'
+      )
+      .subscribe(
+        (res: any) => {
+          this.alertMessage = res.message;
+          this.updated = true;
+          this.nameOfUser = '';
+        },
+
+        (e) => console.log(e),
+        () => {
+          console.log('finished');
+          this.hasSelectedNewAdmin = false;
+          this.userToUpgrade = '';
+          this.selectedAdminGroup = '';
+          this.isPromoteToAdmin = false;
+          this.isPromoteToSuper = false;
+          this.isDeleteUser = false;
+          this.isAddUserToGroup = false;
+          this.userSelected = false;
+          this.currentUser = { UUID: '', name: '' };
+        }
+      );
+  }
+  onAdminDeleteUser() {
+    if (!this.isDeleteUser || !this.userSelected) {
+      return;
+    }
+    console.log(this.currentUser);
+    this.auth.adminDeleteUser(this.currentUser.UUID).subscribe(
+      (val: any) => console.log(val),
+      (e) => console.log(e),
+      () => {
+        console.log('finished');
+        this.userToUpgrade = '';
+        this.isPromoteToAdmin = false;
+        this.isPromoteToSuper = false;
+        this.isDeleteUser = false;
+        this.isAddUserToGroup = false;
+        this.userSelected = false;
+        this.currentUser = { UUID: '', name: '' };
+        this.adminUserList = [];
+        this.auth.getUserList().subscribe((users: any) => {
+          this.adminUserList = users;
+        });
+      }
+    );
+  }
+
+  onAdminCreateSuper() {
+    if (!this.isPromoteToSuper || !this.userSelected) {
+      console.log('somethings wong');
+      return;
+    }
+    console.log(this.currentUser);
+    this.auth.adminMakeSuper(this.currentUser.UUID).subscribe(
+      (val: any) => console.log(val),
+      (e) => console.log(e),
+      () => {
+        console.log('finished');
+        this.userToUpgrade = '';
+        this.isPromoteToAdmin = false;
+        this.isPromoteToSuper = false;
+        this.isDeleteUser = false;
+        this.isAddUserToGroup = false;
+        this.userSelected = false;
+        this.currentUser = { UUID: '', name: '' };
+        this.adminUserList = [];
+        this.auth.getUserList().subscribe((users: any) => {
+          this.adminUserList = users;
+        });
+      }
+    );
   }
 }
