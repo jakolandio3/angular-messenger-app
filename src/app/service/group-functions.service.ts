@@ -29,6 +29,17 @@ export class GroupFunctionsService {
   getAllGroups(): Observable<any> {
     return this.http.get(this.BACKENDURL + '/api/groups/id');
   }
+  getUserAdminGroups(): Observable<any> {
+    const thisUserID = this.auth.getFromSessionStorage('UUID');
+    const body = {
+      adminID: thisUserID,
+    };
+    return this.http.post(
+      `${this.BACKENDURL}/api/groups/admin/list`,
+      body,
+      this.httpOptions
+    );
+  }
   getUserByID(userID: string): Observable<any> {
     return this.http.post(
       this.BACKENDURL + '/api/users/id',
@@ -46,6 +57,30 @@ export class GroupFunctionsService {
     };
     return this.http.post(
       `${this.BACKENDURL}/api/groups/assign`,
+      body,
+      this.httpOptions
+    );
+  }
+  leaveGroup(groupID: string): Observable<any> {
+    const thisUserID = this.auth.getFromSessionStorage('UUID');
+    const body = {
+      userID: thisUserID,
+      groupID,
+    };
+    return this.http.post(
+      `${this.BACKENDURL}/api/groups/leave`,
+      body,
+      this.httpOptions
+    );
+  }
+  requestJoinGroup(groupID: string): Observable<any> {
+    const thisUserID = this.auth.getFromSessionStorage('UUID');
+    const body = {
+      userID: thisUserID,
+      groupID,
+    };
+    return this.http.post(
+      `${this.BACKENDURL}/api/groups/request`,
       body,
       this.httpOptions
     );

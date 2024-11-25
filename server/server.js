@@ -37,10 +37,16 @@ app.post("/api/auth/users", require("./routes/api/auth").GetAllUsers);
 // group calls
 app.post("/api/groups/all", require("./routes/api/group").getAll);
 app.get("/api/groups/id", require("./routes/api/group").getAllID);
+app.post(
+  "/api/groups/admin/list",
+  require("./routes/api/group").getAdminGroupList
+);
 app.post("/api/groups/getbyid", require("./routes/api/group").getGroupByID);
 app.post("/api/groups/assign", require("./routes/api/group").assignUserToGroup);
 app.post("/api/groups/create", require("./routes/api/group").createNewGroup);
 app.post("/api/groups/delete", require("./routes/api/group").deleteGroupByID);
+app.post("/api/groups/leave", require("./routes/api/group").userLeaveGroup);
+app.post("/api/groups/request", require("./routes/api/group").userRequestJoin);
 app.post(
   "/api/groups/update/user",
   require("./routes/api/group").updateUserGroupRoles

@@ -53,14 +53,21 @@ export class AdminComponent {
   ) {
     this.auth.getPermissions.subscribe((val: role[]) => {
       this.permissions = val;
-      this.isAdmin = this.permissions.includes('SUPERADMIN' || 'USERADMIN');
+      this.isAdmin =
+        this.permissions.includes('USERADMIN') ||
+        this.permissions.includes('SUPERADMIN');
       this.isSuperAdmin = this.permissions.includes('SUPERADMIN');
     });
-    this.groupservice
-      .getAllGroups()
-      .subscribe((val: any) => this.groupList.push(...val));
-    console.log(this.groupList);
     if (this.isAdmin) {
+      this.groupservice
+        .getUserAdminGroups()
+        .subscribe((val: any) => this.groupList.push(...val.data));
+      console.log(this.groupList);
+    } else if (this.isSuperAdmin) {
+      this.groupservice
+        .getAllGroups()
+        .subscribe((val: any) => this.groupList.push(...val));
+      console.log(this.groupList);
       this.auth.getUserList().subscribe((users: any) => {
         this.adminUserList = users;
       });

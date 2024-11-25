@@ -18,10 +18,18 @@ export class AppComponent {
 
   constructor(private auth: CheckAuthService) {
     this.auth.getValid.subscribe((val: any) => (this.loggedIn = val));
-    this.auth.getPermissions.subscribe((val: role[]) => {
-      this.permissions = val;
-      this.isAdmin = this.permissions?.includes('SUPERADMIN' || 'USERADMIN');
-    });
+    this.auth.getPermissions.subscribe(
+      (val: role[]) => {
+        console.log(`Permissisons: ${val}`);
+        this.permissions = val;
+        console.log(this.permissions);
+        this.isAdmin = this.permissions?.includes('SUPERADMIN');
+        this.isAdmin = this.permissions?.includes('USERADMIN');
+        console.log(this.isAdmin);
+      },
+      (e: any) => console.log(e),
+      () => {}
+    );
   }
 
   logOut() {

@@ -1,26 +1,67 @@
 <!-- groups.component.html -->
 
 <div class="container">
+  <div [hidden]="!messageAlert" class="alert alert-success" role="alert">
+    {{ serverMessage }}
+  </div>
   <h2>List of Your Groups</h2>
   <ul class="list-group">
-    <li class="list-group-item" *ngFor="let group of groupsArr">
-      <div class="d-flex flex-cols justify-items-center">
-        Name: {{ group.name }}
-        <div class="d-flex flex-cols justify-items-center">
-          <select name="Channels">
-            <option *ngFor="let user of group.users">{{ user }}</option>
+    <li
+      class="list-group-item my-2"
+      *ngFor="let group; let i = index; of: groupsArr"
+    >
+      <div class="d-flex flex-cols justify-content-center gap-2">
+        <div class="w-50">
+          <h4>Name:</h4>
+
+          <p class="fw-bold">
+            {{ group.name }}
+          </p>
+        </div>
+        <div class="">
+          <label for="Channels"> <h4>Channels:</h4></label>
+          <select name="Channels" [(ngModel)]="selectedChannel[i]">
+            <option value="">Select a Channel</option>
+            <option *ngFor="let channel of group.channels">
+              {{ channel }}
+            </option>
           </select>
         </div>
-        <a class="btn btn-primary" routerLink="/auth/room/1{{ group.link }}"
-          >Join Now</a
+        <div
+          class="d-flex flex-cols gap-1 justify-content-end w-100 text-center"
         >
+          <a
+            [hidden]="!selectedChannel[i]"
+            class="btn btn-primary my-2"
+            routerLink="/auth/room/{{ group.UUID }}/{{ selectedChannel[i] }}"
+            >Join Now</a
+          >
+          <button
+            class="btn btn-danger my-2"
+            (click)="onLeaveGroup(group.UUID)"
+          >
+            Leave Group
+          </button>
+        </div>
       </div>
     </li>
   </ul>
   <h2>List of other Groups</h2>
   <ul class="list-group">
-    <li class="list-group-item" *ngFor="let name of AllgroupsArr">
-      {{ name.name }} <button>Request to Join Group</button>
+    <li
+      class="list-group-item d-flex flex-cols justify-content-center gap-2 my-2"
+      *ngFor="let group of AllgroupsArr"
+    >
+      <div class="w-100">
+        <h4>Name:</h4>
+        <p class="fw-bold">{{ group.name }}</p>
+      </div>
+      <button
+        class="btn btn-primary w-20"
+        (click)="onRequestJoinGroup(group.UUID)"
+      >
+        Request to Join Group
+      </button>
     </li>
   </ul>
 </div>

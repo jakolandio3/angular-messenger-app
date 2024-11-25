@@ -26,7 +26,7 @@ export const routes: Routes = [
       { path: '', redirectTo: '/auth/home', pathMatch: 'full' },
       { path: 'profile', component: ProfileComponent },
       { path: 'home', component: GroupsComponent },
-      { path: 'room/:id', component: ChannelComponent },
+      { path: 'room/:groupID/:channelID', component: ChannelComponent },
       { path: 'settings', component: AccountComponent },
       { path: 'admin', component: AdminComponent },
     ],

@@ -31,7 +31,16 @@ module.exports = {
         fs.readFile(DATABASE.GROUPS_DB, "utf-8", (error, data) => {
           if (isAdmin) {
             // console.log("sending all groups");
-            res.send(data);
+            // res.send(data);
+            console.log("remember to revert this!!");
+            let groupsDB = JSON.parse(data);
+            // console.log(groupsDB, "groups db");
+
+            const returnArray = groupsDB.filter((group) =>
+              group.users.includes(UUID)
+            );
+            // console.log(returnArray);
+            res.send(JSON.stringify(returnArray));
           } else {
             let groupsDB = JSON.parse(data);
             // console.log(groupsDB, "groups db");
@@ -45,6 +54,44 @@ module.exports = {
         });
       }
     });
+  },
+  getAdminGroupList: async (req, res) => {
+    try {
+      const { adminID } = req.body;
+      let dataUser = await fs.promises.readFile(DATABASE.USERS_DB, "utf-8");
+      let userArr = await JSON.parse(dataUser);
+      const i = userArr.findIndex((user) => user.UUID === +adminID);
+      if (i === -1) {
+        return res.send(JSON.stringify({ error: "User Not Found" }));
+      }
+      if (!userArr[i].roles.includes("USERADMIN")) {
+        return res.send(JSON.stringify({ error: "User Is Not A Group Admin" }));
+      }
+      let dataGroup = await fs.promises.readFile(DATABASE.GROUPS_DB, "utf-8");
+      let groupArr = await JSON.parse(dataGroup);
+      let filteredArr = groupArr.filter((group) =>
+        group.admins.includes(adminID)
+      );
+      console.log(groupArr);
+      console.log(filteredArr);
+      if (filteredArr.length <= 0) {
+        return res.send(
+          JSON.stringify({
+            error: "User Has No Groups its an Admin To Currently",
+          })
+        );
+      }
+      return res.send(
+        JSON.stringify({
+          ok: true,
+          message: "Groups Fetched Successfully",
+          data: filteredArr,
+        })
+      );
+    } catch (error) {
+      console.log(error);
+      return res.send(JSON.stringify({ error: error }));
+    }
   },
   getAllID: (req, res) => {
     fs.readFile(DATABASE.GROUPS_DB, "utf-8", (error, data) => {
@@ -85,7 +132,10 @@ module.exports = {
         console.log("no user found");
         res.send(JSON.stringify({ error: "No account for User found" }));
       } else {
-        if (!allUsers[j].roles.includes("SUPERADMIN" || "USERADMIN")) {
+        if (
+          !allUsers[j].roles.includes("SUPERADMIN") &&
+          !allUsers[j].roles.includes("USERADMIN")
+        ) {
           res.send(
             JSON.stringify({ error: "Not Authorized to perform this action" })
           );
@@ -123,7 +173,8 @@ module.exports = {
                     })
                   );
                 } else if (
-                  allUsers[j].roles.includes("USERADMIN" && !"SUPERADMIN")
+                  allUsers[j].roles.includes("USERADMIN") &&
+                  !allUsers[j].roles.includes("SUPERADMIN")
                 ) {
                   if (!allGroups[i].admins.includes(adminID)) {
                     res.send(JSON.stringify({ error: "Not Group ADMIN" }));
@@ -179,7 +230,10 @@ module.exports = {
               JSON.stringify({ error: "No account for User found" })
             );
           }
-          if (!allUsers[j].roles.includes("SUPERADMIN" || "USERADMIN")) {
+          if (
+            !allUsers[j].roles.includes("SUPERADMIN") &&
+            !allUsers[j].roles.includes("USERADMIN")
+          ) {
             return res.send(
               JSON.stringify({ error: "Not Authorized to perform this action" })
             );
@@ -231,7 +285,10 @@ module.exports = {
               JSON.stringify({ error: "No account for User found" })
             );
           }
-          if (!allUsers[j].roles.includes("SUPERADMIN" || "USERADMIN")) {
+          if (
+            !allUsers[j].roles.includes("SUPERADMIN") &&
+            !allUsers[j].roles.includes("USERADMIN")
+          ) {
             return res.send(
               JSON.stringify({ error: "Not Authorized to perform this action" })
             );
@@ -284,7 +341,10 @@ module.exports = {
               JSON.stringify({ error: "No account for User found" })
             );
           }
-          if (!allUsers[j].roles.includes("SUPERADMIN" || "USERADMIN")) {
+          if (
+            !allUsers[j].roles.includes("SUPERADMIN") &&
+            !allUsers[j].roles.includes("USERADMIN")
+          ) {
             return res.send(
               JSON.stringify({
                 error: "Not Authorized to perform this action",
@@ -345,7 +405,10 @@ module.exports = {
               JSON.stringify({ error: "No account for User found" })
             );
           }
-          if (!allUsers[j].roles.includes("SUPERADMIN" || "USERADMIN")) {
+          if (
+            !allUsers[j].roles.includes("SUPERADMIN") &&
+            !allUsers[j].roles.includes("USERADMIN")
+          ) {
             return res.send(
               JSON.stringify({
                 error: "Not Authorized to perform this action",
@@ -385,6 +448,81 @@ module.exports = {
         });
     }
   },
+  userLeaveGroup: (req, res) => {
+    const { userID, groupID } = req.body;
+    return fs.readFile(DATABASE.USERS_DB, "utf8", (error, data) => {
+      let allUsers = JSON.parse(data);
+      let i = allUsers.findIndex((user) => user.UUID === +userID);
+      if (i === -1) {
+        console.log("no user found");
+        return res.send(JSON.stringify({ error: "No account for User found" }));
+      }
+      fs.readFile(DATABASE.GROUPS_DB, "utf-8", (error, data) => {
+        let allGroups = JSON.parse(data);
+        let g = allGroups.findIndex((group) => group.UUID === +groupID);
+        if (g === -1) {
+          console.log("no user found");
+          return res.send(JSON.stringify({ error: "No Group was found" }));
+        }
+        if (allGroups[g].users.includes(userID)) {
+          let newUsers = allGroups[g].users.filter((user) => user !== userID);
+          allGroups[g].users = newUsers;
+          let newAdmins = allGroups[g].admins.filter((user) => user !== userID);
+          allGroups[g].admins = newAdmins;
+          fs.writeFile(
+            DATABASE.GROUPS_DB,
+            JSON.stringify(allGroups),
+            "utf-8",
+            (error) => console.log(error)
+          );
+          return res.send(
+            JSON.stringify({
+              ok: true,
+              message: `User: ${userID} successfully removed from Group: ${groupID}`,
+            })
+          );
+        } else return res.send({ error: "User does not exist in group" });
+      });
+    });
+  },
+  userRequestJoin: (req, res) => {
+    const { userID, groupID } = req.body;
+    return fs.readFile(DATABASE.USERS_DB, "utf8", (error, data) => {
+      let allUsers = JSON.parse(data);
+      let i = allUsers.findIndex((user) => user.UUID === +userID);
+      if (i === -1) {
+        console.log("no user found");
+        return res.send(JSON.stringify({ error: "No account for User found" }));
+      }
+      fs.readFile(DATABASE.GROUPS_DB, "utf-8", (error, data) => {
+        let allGroups = JSON.parse(data);
+        let g = allGroups.findIndex((group) => group.UUID === +groupID);
+        if (!allGroups[g].users.includes(userID)) {
+          for (let request of allGroups[g].requests) {
+            if (request.UUID === +userID) {
+              return res.send(
+                JSON.stringify({ error: "User has already requested to join" })
+              );
+            }
+          }
+          const newRequest = { name: allUsers[i].username, UUID: +userID };
+          allGroups[g].requests.push(newRequest);
+          fs.writeFile(
+            DATABASE.GROUPS_DB,
+            JSON.stringify(allGroups),
+            "utf-8",
+            (error) => console.log(error)
+          );
+          return res.send(
+            JSON.stringify({
+              ok: true,
+              message: `User: ${userID} successfully requested to join Group: ${groupID}`,
+            })
+          );
+        } else return res.send({ error: "User does not exist in group" });
+      });
+    });
+  },
   createNewGroup: (req, res) => {
     const { userID, name } = req.body;
     console.log(userID);
@@ -395,7 +533,10 @@ module.exports = {
         console.log("error");
       }
       console.log(allUsers[j]);
-      if (allUsers[j].roles.includes("SUPERADMIN" || "USERADMIN")) {
+      if (
+        allUsers[j].roles.includes("SUPERADMIN") ||
+        allUsers[j].includes("USERADMIN")
+      ) {
         fs.readFile(DATABASE.GROUPS_DB, "utf8", (error, data) => {
           let allGroups = JSON.parse(data);
           let newGroup = new Group(name, allGroups.length + 1);
@@ -446,7 +587,10 @@ module.exports = {
           });
         });
         res.send({ msg: "hemlo" });
-      } else if (allUsers[j].roles.includes("USERADMIN" && !"SUPERADMIN")) {
+      } else if (
+        allUsers[j].roles.includes("USERADMIN") &&
+        !allUsers[j].roles.includes("SUPERADMIN")
+      ) {
         fs.readFile(DATABASE.GROUPS_DB, "utf8", (error, data) => {
           let allGroups = JSON.parse(data);
           let currentGroup = allGroups.findIndex((g) => g.UUID === +groupUUID);
@@ -522,12 +666,18 @@ module.exports = {
         console.log("error user does not exist");
       }
       console.log(allUsers[j]);
-      if (allUsers[j].roles.includes("SUPERADMIN")) {
+      if (
+        allUsers[j].roles.includes("SUPERADMIN") ||
+        allUsers[j].roles.includes("USERADMIN")
+      ) {
         fs.readFile(DATABASE.GROUPS_DB, "utf8", (error, data) => {
           let allGroups = JSON.parse(data);
           let currentGroup = allGroups.findIndex((g) => g.UUID === +groupUUID);
+          if (!allGroups[currentGroup].admins.includes(userID)) {
+            return res.send(JSON.stringify({ error: "Not Authorized" }));
+          }
           if (allGroups[currentGroup]?.channels.length < 1) {
-            res.send({ error: "No Channels in Group" });
+            return res.send(JSON.stringify({ error: "Not Authorized" }));
           } else {
             fs.readFile(DATABASE.CHANNELS_DB, "utf-8", (error, data) => {
               let allChannels = JSON.parse(data);
@@ -535,7 +685,7 @@ module.exports = {
               let thisChannel = allChannels[i];
               console.log(thisChannel);
               let returnObj = { name: thisChannel.name };
-              res.send(JSON.stringify(returnObj));
+              return res.send(JSON.stringify(returnObj));
             });
           }
         });
@@ -583,45 +733,40 @@ module.exports = {
             );
           });
         });
-      } else if (allUsers[j].roles.includes("USERADMIN" && !"SUPERADMIN")) {
+      } else if (allUsers[j].roles.includes("USERADMIN")) {
         fs.readFile(DATABASE.GROUPS_DB, "utf8", (error, data) => {
           let allGroups = JSON.parse(data);
           let currentGroup = allGroups.findIndex((g) => g.UUID === +group);
           if (!allGroups[currentGroup].admins.includes(userID)) {
-            res.send({ error: "Not Authenticated" });
-          } else {
-            fs.readFile(DATABASE.CHANNELS_DB, "utf-8", (error, data) => {
-              let allChannels = JSON.parse(data);
-              let newChannelUUID = allChannels.length + 1;
-              let newChannel = new Channel(name, newChannelUUID, group, userID);
-              allChannels.push(newChannel);
-              fs.writeFile(
-                DATABASE.CHANNELS_DB,
-                JSON.stringify(allChannels),
-                "utf-8",
-                (error) => console.log(error)
-              );
-              allGroups[currentGroup].channels.push(newChannelUUID);
-              fs.writeFile(
-                DATABASE.GROUPS_DB,
-                JSON.stringify(allGroups),
-                "utf-8",
-                (error) => console.log(error)
-              );
-              return res.send(
-                JSON.stringify({
-                  ok: true,
-                  message: `Channel: ${name} was added to Group: ${group}`,
-                })
-              );
-            });
+            res.send(JSON.stringify({ error: "Not Authenticated" }));
           }
-
-          return res.send(
-            JSON.stringify({ ok: true, message: "Channel added" })
-          );
+          fs.readFile(DATABASE.CHANNELS_DB, "utf-8", (error, data) => {
+            let allChannels = JSON.parse(data);
+            let newChannelUUID = allChannels.length + 1;
+            let newChannel = new Channel(name, newChannelUUID, group, userID);
+            allChannels.push(newChannel);
+            fs.writeFile(
+              DATABASE.CHANNELS_DB,
+              JSON.stringify(allChannels),
+              "utf-8",
+              (error) => console.log(error)
+            );
+            allGroups[currentGroup].channels.push(newChannelUUID);
+            fs.writeFile(
+              DATABASE.GROUPS_DB,
+              JSON.stringify(allGroups),
+              "utf-8",
+              (error) => console.log(error)
+            );
+            return res.send(
+              JSON.stringify({
+                ok: true,
+                message: `Channel: ${name} was added to Group: ${group}`,
+              })
+            );
+          });
         });
-      } else res.send({ error: "Not Authenticated" });
+      } else res.send(JSON.stringify({ error: "Not Authenticated" }));
     });
   },
   deleteChannelByID: (req, res) => {
@@ -635,7 +780,10 @@ module.exports = {
           JSON.stringify({ error: "No account for Admin found" })
         );
       }
-      if (!allUsers[j].roles.includes("SUPERADMIN" || "USERADMIN")) {
+      if (
+        !allUsers[j].roles.includes("SUPERADMIN") &&
+        !allUsers[j].roles.includes("USERADMIN")
+      ) {
         return res.send(
           JSON.stringify({ error: "Not Authorized to perform this action" })
         );
