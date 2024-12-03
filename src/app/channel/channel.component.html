@@ -2,17 +2,26 @@
   <div class="row">
     <div class="col-md-8 offset-md-2">
       <div class="card">
-        <div class="card-header">Chat Room</div>
+        <div class="card-header">Welcome name to Chat Room</div>
         <div class="card-body">
           <div class="message-list">
-            <div class="message">
-              <div class="message-sender">User1</div>
-              <div class="message-content">Hello!</div>
+            <div *ngIf="incomingMessage | async as messages" class="message">
+              <div class="message-content alert alert-danger">
+                ⚠️ Incoming Message ⚠️
+              </div>
+              <div class="message-sender alert alert-primary">
+                {{ messages.message }}
+              </div>
             </div>
-            <div class="message">
-              <div class="message-sender">User2</div>
-              <div class="message-content">Hi there!</div>
+            <div *ngFor="let m of messageArray as mes">
+              <div class="message-content alert alert-success" *ngIf="m.userID">
+                <div class="message-content alert alert-success">
+                  User: {{ m.userID }}
+                </div>
+                <div class="message-sender">{{ m.message }}</div>
+              </div>
             </div>
+
             <!-- Add more messages here -->
           </div>
         </div>
@@ -22,9 +31,13 @@
               type="text"
               class="form-control"
               placeholder="Type your message..."
+              [(ngModel)]="messageContent"
+              (keydown.enter)="chat()"
             />
             <div class="input-group-append">
-              <button class="btn btn-primary" type="button">Send</button>
+              <button class="btn btn-primary" type="button" (click)="chat()">
+                Send
+              </button>
             </div>
           </div>
         </div>

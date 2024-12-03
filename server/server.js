@@ -7,11 +7,12 @@ const io = require("socket.io")(http, {
 });
 const PORT = 3000;
 const server = require("./listen");
-// const socket = require('./sockets/something') to add later
+const socket = require("./routes/sockets/socket");
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+socket.connect(io, PORT);
 server.listen(http, PORT);
 
 //routes to use for auth
