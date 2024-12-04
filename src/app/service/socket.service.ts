@@ -1,5 +1,5 @@
 import { ApplicationRef, Injectable } from '@angular/core';
-import { first, Observable, Subject } from 'rxjs';
+import { first, Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 const SERVER_URL = 'http://localhost:3000';
 @Injectable({
@@ -13,7 +13,7 @@ export class SocketService {
   }
 
   initSocket(GroupID: string, RoomID: string, clientId: string) {
-    this.socket = io(`${SERVER_URL}/admin`, {
+    this.socket = io(`${SERVER_URL}/${GroupID}`, {
       autoConnect: false,
       auth: { userID: clientId },
       query: { group: GroupID, room: RoomID },

@@ -5,6 +5,7 @@ const fs = require("fs");
 module.exports = {
   GetByID: function (req, res) {
     const userID = req.body.data;
+
     fs.readFile(DATABASE.USERS_DB, "utf-8", function (error, data) {
       if (error) throw error;
       let userArr = JSON.parse(data);
@@ -13,6 +14,7 @@ module.exports = {
         res.send({ error: "No User Found" });
       } else {
         const usersName = userArr[i].username;
+
         return res.send(JSON.stringify(usersName));
       }
     });
