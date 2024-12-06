@@ -2,7 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
-import { SocketService } from '../service/socket.service';
+import {
+  ChannelMessages,
+  SocketConnectedData,
+  SocketService,
+} from '../service/socket.service';
 import { CheckAuthService } from '../service/check-auth.service';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs/operators';
@@ -16,8 +20,9 @@ import { SocketData } from '../service/socket.service';
 })
 export class ChannelComponent implements OnInit {
   messageContent: string = '';
-  messageArray: SocketData[] = [];
+  messageArray: (SocketData | ChannelMessages)[] = [];
   incomingMessage: Observable<SocketData>;
+  channelDetails: Observable<SocketConnectedData>;
   ioConnection: Subscription | undefined;
   userID: string | null = '';
 
@@ -38,6 +43,7 @@ export class ChannelComponent implements OnInit {
     this.currentGroupID = this.route.params.pipe(map((p) => p['groupID']));
     this.currentChannelID = this.route.params.pipe(map((p) => p['channelID']));
     this.incomingMessage = new Observable<SocketData>();
+    this.channelDetails = new Observable<SocketConnectedData>();
   }
 
   ngOnInit(): void {
@@ -65,10 +71,23 @@ export class ChannelComponent implements OnInit {
     }
     this.socket.initSocket(currGroupID, currChannelID, this.userID);
     this.incomingMessage = this.socket.getMessages().pipe(map((p) => p));
-    this.incomingMessage.subscribe((m) => {
+    this.incomingMessage.subscribe((m: SocketData) => {
       console.log(m);
       this.messageArray.push(m);
       console.log(this.messageArray);
+    });
+    this.channelDetails = this.socket.getDetails().pipe(map((p) => p));
+    this.channelDetails.subscribe((data: SocketConnectedData) => {
+      const {
+        messages,
+        groupUUID,
+        groupName,
+        roomUUID,
+        roomName,
+        isAdmin,
+        inRoom,
+      } = data.data;
+      this.messageArray.push(...messages);
     });
   }
   chat() {

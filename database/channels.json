@@ -1,1 +1,1 @@
-[{"name":"milk","UUID":2,"groupUUID":1,"createdBy":"3","messages":[]},{"name":"New Channel","UUID":3,"groupUUID":2,"createdBy":"2909","messages":[]}]
+[{"name":"milk","UUID":2,"groupUUID":1,"createdBy":"3","messages":[{"UUID":"1","content":"This is a Test Message"},{"UUID":2,"message":"Sending a new Message"},{"UUID":3,"message":"noice Test"}]},{"name":"New Channel","UUID":3,"groupUUID":2,"createdBy":"2909","messages":[{"UUID":"1","content":"This is a Test Message"}]},{"name":"a whole new channel","UUID":4,"groupUUID":1,"createdBy":"3","messages":[]}]

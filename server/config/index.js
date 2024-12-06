@@ -3,5 +3,6 @@ module.exports = {
   CHANNELS_DB: "../database/channels.json",
   GROUPS_DB: "../database/groups.json",
   USERS_DB: "../database/users.json",
+  MESSAGES_DB: "../database/messages.json",
 };
 // maybe some secret keys and db to mongoose etc. will go here later

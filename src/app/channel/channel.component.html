@@ -14,9 +14,12 @@
               </div>
             </div>
             <div *ngFor="let m of messageArray as mes">
-              <div class="message-content alert alert-success" *ngIf="m.userID">
+              <div
+                class="message-content alert alert-success"
+                *ngIf="m.userID || m.UUID"
+              >
                 <div class="message-content alert alert-success">
-                  User: {{ m.userID }}
+                  User: {{ m.userID || m.UUID }}
                 </div>
                 <div class="message-sender">{{ m.message }}</div>
               </div>

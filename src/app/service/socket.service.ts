@@ -8,8 +8,10 @@ const SERVER_URL = 'http://localhost:3000';
 export class SocketService {
   private socket!: Socket<ServerToClientEvents, ClientToServerEvents>;
   socketMessages: Subject<SocketData>;
+  socketDetails: Subject<SocketConnectedData>;
   constructor(private appRef: ApplicationRef) {
     this.socketMessages = new Subject<SocketData>();
+    this.socketDetails = new Subject<SocketConnectedData>();
   }
 
   initSocket(GroupID: string, RoomID: string, clientId: string) {
@@ -22,7 +24,10 @@ export class SocketService {
       .pipe(first((isStable) => isStable))
       .subscribe(() => this.socket.connect());
 
-    this.socket.on('connected', (data: SocketData) => this.pushToSubject(data));
+    this.socket.on('connected', (data: SocketConnectedData) => {
+      this.pushToDetails(data);
+      // this.pushToSubject({ message: data.message, userID: data.data.roomName });
+    });
     this.socket.on('message', (data: SocketData) => this.pushToSubject(data));
     return () => {
       console.log('cleanup');
@@ -31,6 +36,9 @@ export class SocketService {
   }
   private pushToSubject(data: SocketData) {
     return this.socketMessages.next(data);
+  }
+  private pushToDetails(data: SocketConnectedData) {
+    return this.socketDetails.next(data);
   }
   send(message: string) {
     console.log(message);
@@ -42,17 +50,38 @@ export class SocketService {
   getMessages() {
     return this.socketMessages;
   }
+  getDetails() {
+    return this.socketDetails;
+  }
 }
 
 interface ClientToServerEvents {
   message: (message: string) => void;
 }
 interface ServerToClientEvents {
-  message: (data: SocketData) => void;
-  connected?: (data: SocketData) => void;
+  message?: (data: SocketData) => void;
+  connected?: (data: SocketConnectedData) => void;
   userID?: string;
 }
 export interface SocketData {
   message?: string;
+  userID?: string;
+  UUID?: string | number;
+}
+export interface SocketConnectedData {
+  message: string;
+  data: {
+    groupName: string;
+    groupUUID: number;
+    isAdmin: boolean;
+    messages: ChannelMessages[];
+    roomName: string;
+    roomUUID: number;
+    inRoom: number;
+  };
+}
+export interface ChannelMessages {
+  UUID: number | string;
+  message: string;
   userID?: string;
 }
