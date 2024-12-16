@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {
   ChannelMessages,
   SocketConnectedData,
@@ -25,6 +26,11 @@ export class ChannelComponent implements OnInit {
   channelDetails: Observable<SocketConnectedData>;
   ioConnection: Subscription | undefined;
   userID: string | null = '';
+  userName: string | null = '';
+  currentGroupName: string = 'Loading';
+  currentRoomName: string = 'Loading';
+  userIsAdmin: boolean = false;
+  usersInRoom: number = 0;
 
   currentGroupID: Observable<string>;
   currentChannelID: Observable<string>;
@@ -32,7 +38,8 @@ export class ChannelComponent implements OnInit {
   constructor(
     private socket: SocketService,
     private auth: CheckAuthService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private modalService: NgbModal
   ) {
     if (this.auth.getFromSessionStorage('UUID') === null) {
       this.userID = '';
@@ -40,6 +47,8 @@ export class ChannelComponent implements OnInit {
     } else {
       this.userID = this.auth.getFromSessionStorage('UUID');
     }
+
+    this.userName = this.auth.getFromSessionStorage('username');
     this.currentGroupID = this.route.params.pipe(map((p) => p['groupID']));
     this.currentChannelID = this.route.params.pipe(map((p) => p['channelID']));
     this.incomingMessage = new Observable<SocketData>();
@@ -88,6 +97,10 @@ export class ChannelComponent implements OnInit {
         inRoom,
       } = data.data;
       this.messageArray.push(...messages);
+      this.currentGroupName = groupName;
+      this.currentRoomName = roomName;
+      this.userIsAdmin = isAdmin;
+      this.usersInRoom = inRoom;
     });
   }
   chat() {
@@ -98,5 +111,11 @@ export class ChannelComponent implements OnInit {
     } else {
       console.log('no message');
     }
+  }
+  openModalFunction(content: any) {
+    this.modalService.open(content);
+  }
+  closeModalFunction() {
+    this.modalService.dismissAll();
   }
 }

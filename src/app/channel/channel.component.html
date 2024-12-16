@@ -2,7 +2,12 @@
   <div class="row">
     <div class="col-md-8 offset-md-2">
       <div class="card">
-        <div class="card-header">Welcome name to Chat Room</div>
+        <div class="card-header">
+          <h3>
+            Welcome:{{ userName }} to {{ currentGroupName }} /
+            {{ currentRoomName }}
+          </h3>
+        </div>
         <div class="card-body">
           <div class="message-list">
             <div *ngIf="incomingMessage | async as messages" class="message">
@@ -13,15 +18,30 @@
                 {{ messages.message }}
               </div>
             </div>
-            <div *ngFor="let m of messageArray as mes">
-              <div
-                class="message-content alert alert-success"
-                *ngIf="m.userID || m.UUID"
-              >
-                <div class="message-content alert alert-success">
-                  User: {{ m.userID || m.UUID }}
+            <div *ngFor="let m of messageArray as mes" class="py-2">
+              <div *ngIf="m.userID || m.createdBy">
+                <div
+                  class="message-sender bg-info rounded-top p-2 d-flex flex-row justify-content-between"
+                >
+                  <div class="align-self-center">
+                    {{ m.userID || m.createdBy }}:
+                  </div>
+                  <div class="">
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      (click)="openModalFunction(myModalContent)"
+                    >
+                      Report⚠️
+                    </button>
+                    <button type="button" class="btn btn-secondary">
+                      Kick🚩
+                    </button>
+                  </div>
                 </div>
-                <div class="message-sender">{{ m.message }}</div>
+                <div class="border border-info rounded-bottom p-2">
+                  {{ m.message }}
+                </div>
               </div>
             </div>
 
@@ -48,3 +68,46 @@
     </div>
   </div>
 </div>
+<div class="container my-2">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <div class="card">
+        <h2 class="card-header">Change Rooms</h2>
+        <div class="card-body">
+          <div class="d-flex w-full gap-2">
+            <select class="flex-fill form-control" name="" id="">
+              <option value="default">Please</option>
+              <option value="">Add</option>
+              <option value="">The</option>
+              <option value="">Other Rooms</option>
+            </select>
+            <button class="btn btn-primary" type="button">Go!</button>
+          </div>
+        </div>
+        <div class="card-footer d-flex">
+          <button class="btn btn-primary flex-fill" type="button">
+            Back to Groups
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<ng-template #myModalContent let-modal>
+  <div class="modal-header">
+    <h1>Report User ⚠️</h1>
+    <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <h2>Add A Reason:</h2>
+    <textarea></textarea>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-danger">Report</button>
+    <button type="button" class="btn btn-secondary" (click)="modal.close()">
+      Close
+    </button>
+  </div>
+</ng-template>

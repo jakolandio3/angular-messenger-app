@@ -67,6 +67,7 @@ export interface SocketData {
   message?: string;
   userID?: string;
   UUID?: string | number;
+  createdBy?: string;
 }
 export interface SocketConnectedData {
   message: string;
@@ -84,4 +85,5 @@ export interface ChannelMessages {
   UUID: number | string;
   message: string;
   userID?: string;
+  createdBy: string;
 }

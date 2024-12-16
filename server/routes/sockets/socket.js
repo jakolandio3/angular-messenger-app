@@ -151,6 +151,7 @@ module.exports = {
           +room,
           +group,
           UUID,
+          userName,
           message
         );
         messagesArr.push(curMessage);
@@ -163,6 +164,7 @@ module.exports = {
         }
         channelArr[i].messages.push({
           UUID: messagesLength + 1,
+          createdBy: userName,
           message: message,
         });
         fs.writeFileSync(DATABASE.MESSAGES_DB, JSON.stringify(messagesArr));
